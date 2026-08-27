@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSubmit, Row, FormMsg } from "./forms-shared";
+import { PlanPicker } from "./PlanPicker";
+import { planesParaTipo } from "@/lib/planes";
 
 const TIPOS = [
   { v: "CLUB", t: "Club deportivo" },
   { v: "GIMNASIO", t: "Gimnasio" },
   { v: "INDIVIDUAL", t: "Deportista individual" },
 ];
-
-const PLANES = ["TRIAL", "CORTESIA_CMD", "CLUB_MENSUAL", "GIMNASIO", "INDIVIDUAL"];
 
 export function OrgForm() {
   const router = useRouter();
@@ -22,6 +22,13 @@ export function OrgForm() {
   const [adminNombre, setAdminNombre] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
+
+  const planes = planesParaTipo(tipo);
+
+  // Si al cambiar el tipo el plan elegido ya no aplica, volver a "Prueba".
+  useEffect(() => {
+    if (!planes.includes(plan)) setPlan("TRIAL");
+  }, [tipo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="card max-w-lg p-6">
@@ -35,9 +42,7 @@ export function OrgForm() {
           </select>
         </Row>
         <Row label="Plan">
-          <select className="input max-w-xs" value={plan} onChange={(e) => setPlan(e.target.value)}>
-            {PLANES.map((p) => (<option key={p} value={p}>{p}</option>))}
-          </select>
+          <PlanPicker value={plan} onChange={setPlan} planes={planes} />
         </Row>
         <label className="flex items-center gap-2 text-sm font-medium text-ink">
           <input type="checkbox" className="h-4 w-4" checked={cmdCubierta} onChange={(e) => setCmdCubierta(e.target.checked)} />

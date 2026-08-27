@@ -32,6 +32,7 @@ export default async function OrgDetailPage({ params }: { params: { id: string }
           org={{
             id: org.id,
             nombre: org.nombre,
+            tipo: org.tipo,
             plan: org.plan,
             cmdCubierta: org.cmdCubierta,
             trialHasta: org.trialHasta ? org.trialHasta.toISOString() : null,

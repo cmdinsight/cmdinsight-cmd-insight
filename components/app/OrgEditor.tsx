@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSubmit, Row, FormMsg } from "./forms-shared";
-
-const PLANES = ["TRIAL", "CORTESIA_CMD", "CLUB_MENSUAL", "GIMNASIO", "INDIVIDUAL"];
+import { PlanPicker } from "./PlanPicker";
+import { planesParaTipo } from "@/lib/planes";
 
 interface Org {
   id: string;
   nombre: string;
+  tipo?: string | null;
   plan: string;
   cmdCubierta: boolean;
   trialHasta: string | Date | null;
@@ -26,6 +27,10 @@ export function OrgEditor({ org }: { org: Org }) {
   );
   const [notas, setNotas] = useState(org.notas ?? "");
 
+  // Siempre mostrar el plan actual, aunque no sea "típico" para el tipo de organización.
+  const planesBase = planesParaTipo(org.tipo);
+  const planes = planesBase.includes(org.plan) ? planesBase : [org.plan, ...planesBase];
+
   return (
     <div className="card max-w-lg p-6">
       <div className="space-y-4">
@@ -33,9 +38,7 @@ export function OrgEditor({ org }: { org: Org }) {
           <input className="input" value={nombre} onChange={(e) => setNombre(e.target.value)} />
         </Row>
         <Row label="Plan">
-          <select className="input max-w-xs" value={plan} onChange={(e) => setPlan(e.target.value)}>
-            {PLANES.map((p) => (<option key={p} value={p}>{p}</option>))}
-          </select>
+          <PlanPicker value={plan} onChange={setPlan} planes={planes} />
         </Row>
         <label className="flex items-center gap-2 text-sm font-medium text-ink">
           <input type="checkbox" className="h-4 w-4" checked={cmdCubierta} onChange={(e) => setCmdCubierta(e.target.checked)} />
