@@ -13,7 +13,15 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
       descuento por compromiso, si se decide). Hoy `lib/planes.ts` tiene solo el precio mensual.
 - [ ] Estados de suscripción: trial activo → vencido → pago → moroso → baja.
 - [ ] Integración de pagos con **dLocal** — pagos por la web, sobre todo el plan individual.
-      Checkout, webhooks de confirmación, reintentos. (Falta cuenta de merchant.)
+      Checkout, webhooks de confirmación, reintentos.
+  - Cuenta dLocal Go: **González Guerrero Manuel Alejandro y Arredondo Diez Camila** (sociedad de
+    hecho), RUT **220266830010**, Uruguay. Tel. registrado +598 98 052210.
+  - Requisitos de validación de merchant: HECHO en la web → `/terminos`, `/privacidad`,
+    `/contacto` (formulario funcional + bandeja en `/app/cmd/mensajes`), línea legal en el footer.
+  - **Falta:** (1) en dLocal Go cambiar el sitio de `cmdinsight.lovable.app` a la URL real;
+    (2) conectar el subdominio definitivo de `cmd.uy`; (3) confirmar el nombre legal completo
+    (en dLocal aparece cortado: "...CAMILA -"); (4) decidir qué teléfono público se muestra;
+    (5) recién ahí pedirle a dLocal (Bruna) que valide.
 - [ ] Facturación / comprobantes por organización.
 - [ ] Flujo de asignación del Plan Cortesía CMD y su vencimiento.
 - [ ] Panel de cobros para Admin CMD (quién pagó, quién debe, próximos vencimientos).

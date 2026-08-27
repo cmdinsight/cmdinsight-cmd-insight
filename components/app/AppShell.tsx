@@ -27,6 +27,7 @@ function navFor(rol: Rol, athleteIndividual: boolean): NavItem[] {
     case "ADMIN_CMD":
       return [
         { href: "/app/cmd", label: "Organizaciones" },
+        { href: "/app/cmd/mensajes", label: "Mensajes" },
         { href: "/app/plantel", label: "Plantel" },
       ];
   }

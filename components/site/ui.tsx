@@ -75,6 +75,10 @@ export function CTASection() {
             ¿Solo querés recorrerla?{" "}
             <Link href="/demo" className="font-semibold text-white underline">
               Ver la demo interactiva
+            </Link>{" "}
+            · ¿Preferís escribirnos?{" "}
+            <Link href="/contacto" className="font-semibold text-white underline">
+              Formulario de contacto
             </Link>
           </p>
           <div className="mx-auto mt-8 grid max-w-xl gap-3 text-sm text-white/75 sm:grid-cols-2">

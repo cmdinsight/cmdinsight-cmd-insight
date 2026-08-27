@@ -166,3 +166,16 @@ model EventoEspecial {
 
   @@index([deportistaId])
 }
+
+// Mensajes del formulario de contacto público del sitio.
+model ContactoMensaje {
+  id        String   @id @default(cuid())
+  nombre    String
+  email     String
+  mensaje   String
+  origen    String?
+  leido     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
