@@ -34,18 +34,17 @@ Pendientes acordados, para retomar más adelante. Ordenado por bloque, no por pr
 - [ ] Planes Individual vs Individual Premium (informes para médico, chequeo precompetitivo,
       prioridad en red CMD) — hoy solo están en el enum y el copy.
 
-## 4. Web principal — branding y copy
+## 4. Web principal — branding y copy — HECHO (commit del branding)
 
-- [ ] **Sacar el encuadre personal / financiero del Dr. Manuel González** del footer y de donde
-      aparezca (hoy: "CMD — Cobertura Médica Deportiva · Dr. Manuel González · RUT: 220266830010").
-- [ ] **Agregar la atribución correcta**: *CMD Insight fue desarrollada por **CMD Tech**, la
-      unidad tecnológica de **Integra Medical Group**.*
-- [ ] Se puede mantener el ángulo de credibilidad médica ("desarrollada por médicos de emergencia
-      con experiencia en cobertura deportiva") sin nombrarlo como dueño / RUT.
-- [ ] Repasar todas las menciones a "Dr. Manuel González" en la landing:
-  - `components/site/Footer.tsx`
-  - `app/(site)/page.tsx` (sección "Por qué elegir CMD Insight")
-  - `app/(site)/como-funciona/page.tsx` si aplica
+- [x] Sacado del footer "Dr. Manuel González · RUT: 220266830010".
+- [x] Footer ahora dice: *"CMD Insight fue desarrollada por CMD Tech, la unidad tecnológica de
+      Integra Medical Group."*
+- [x] Sección "Por qué elegir": atribución a CMD Tech / Integra Medical Group, manteniendo el
+      ángulo de "médicos de emergencia con experiencia en cobertura deportiva".
+- [x] Quitada la referencia a la web anterior (`insights.coberturamedicad.com`) del footer y del
+      bloque de contacto. Quedan solo WhatsApp y email (son de Cobertura Médica Deportiva; se
+      cambiarán a los de CMD Tech más adelante).
+- [ ] **Pendiente:** cambiar WhatsApp y email por los de CMD Tech cuando estén.
 - [ ] Otros detalles de copy de la web principal (a definir).
 
 ## 5. Higiene técnica

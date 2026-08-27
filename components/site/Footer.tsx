@@ -8,7 +8,7 @@ export default function Footer() {
         <div>
           <LogoWordmark className="text-xl" />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/70">
-            La plataforma de prevención de lesiones y gestión médica deportiva de CMD.
+            La plataforma de prevención de lesiones y gestión médica deportiva.
             No solo cubrimos lesiones — las anticipamos.
           </p>
         </div>
@@ -38,18 +38,15 @@ export default function Footer() {
                 administracion@coberturamedicad.com
               </a>
             </li>
-            <li>
-              <a href="https://insights.coberturamedicad.com/" className="hover:text-white">
-                insights.coberturamedicad.com
-              </a>
-            </li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-white/10">
         <div className="wrap flex flex-col gap-2 py-6 text-xs text-white/55 md:flex-row md:items-center md:justify-between">
-          <span>CMD — Cobertura Médica Deportiva · Dr. Manuel González · RUT: 220266830010</span>
+          <span>
+            CMD Insight fue desarrollada por CMD Tech, la unidad tecnológica de Integra Medical Group.
+          </span>
           <span className="italic">
             &ldquo;Profesionalizar la asistencia médica en el deporte no es una opción. Es una responsabilidad.&rdquo;
           </span>

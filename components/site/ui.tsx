@@ -77,7 +77,7 @@ export function CTASection() {
               Ver la demo interactiva
             </Link>
           </p>
-          <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-3">
+          <div className="mx-auto mt-8 grid max-w-xl gap-3 text-sm text-white/75 sm:grid-cols-2">
             <div>
               WhatsApp<br />
               <span className="font-semibold text-white">+598 96 276 998</span>
@@ -85,10 +85,6 @@ export function CTASection() {
             <div>
               Email<br />
               <span className="font-semibold text-white">administracion@coberturamedicad.com</span>
-            </div>
-            <div>
-              Web<br />
-              <span className="font-semibold text-white">insights.coberturamedicad.com</span>
             </div>
           </div>
         </div>

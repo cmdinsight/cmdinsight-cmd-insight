@@ -34,7 +34,7 @@ const ONBOARDING = [
 ];
 
 const RAZONES = [
-  "Desarrollado por médicos de emergencia, no software genérico: lo diseñó el Dr. Manuel González.",
+  "Desarrollada por CMD Tech, la unidad tecnológica de Integra Medical Group, junto a médicos de emergencia con experiencia real en cobertura deportiva. No es software genérico.",
   "Integrado con cobertura médica real: CMD ya cubre más de 40 instituciones deportivas en Uruguay.",
   "Modelo escalable sin complejidad: desde un deportista individual hasta un club con 200 jugadores.",
   "Primero en Uruguay en combinar cobertura médica en cancha con plataforma de prevención de lesiones.",

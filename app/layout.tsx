@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: "%s · CMD Insight",
   },
   description:
-    "La plataforma digital de prevención de lesiones de CMD — Cobertura Médica Deportiva. No solo cubrimos lesiones: las anticipamos.",
+    "La plataforma digital de prevención de lesiones deportivas. Combina carga, fatiga, dolor y un algoritmo de riesgo para anticipar lesiones antes de que ocurran. Desarrollada por CMD Tech.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
