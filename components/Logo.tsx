@@ -5,7 +5,7 @@
 type Variant = "light" | "dark";
 type Props = { height?: number; className?: string; variant?: Variant; withWordmark?: boolean };
 
-const RATIO = 320 / 60; // viewBox del lockup completo
+const RATIO = 330 / 60; // viewBox del lockup completo
 const MARK_RATIO = 60 / 60;
 
 function palette(v: Variant) {
@@ -81,7 +81,7 @@ export default function Logo({
     <svg
       height={height}
       width={Math.round(height * RATIO)}
-      viewBox="0 0 320 60"
+      viewBox="0 0 330 60"
       className={className}
       role="img"
       aria-label="CMD Insight"
@@ -92,11 +92,11 @@ export default function Logo({
         <text x="74" y="34" fontSize="30" fontWeight="800" letterSpacing="0.5" fill={c.cmd}>
           CMD
         </text>
-        <text x="140" y="34" fontSize="30" fontWeight="800" letterSpacing="0.5" fill={c.insight}>
+        <text x="160" y="34" fontSize="30" fontWeight="800" letterSpacing="0.5" fill={c.insight}>
           INSIGHT
         </text>
-        <line x1="75" y1="42" x2="302" y2="42" stroke={c.rule} strokeWidth="1" />
-        <text x="75" y="55" fontSize="10.5" fontWeight="600" letterSpacing="3.2" fill={c.tag}>
+        <line x1="75" y1="42" x2="316" y2="42" stroke={c.rule} strokeWidth="1" />
+        <text x="75" y="55" fontSize="10.5" fontWeight="600" letterSpacing="2.7" fill={c.tag}>
           SPORTS HEALTH INTELLIGENCE
         </text>
       </g>
