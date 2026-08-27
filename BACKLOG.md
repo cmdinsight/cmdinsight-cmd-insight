@@ -1,0 +1,56 @@
+# CMD Insight — backlog
+
+Pendientes acordados, para retomar más adelante. Ordenado por bloque, no por prioridad.
+
+## 1. Planes y cobros
+
+- [ ] Modelar los planes con precio y modalidad (mensual / trimestral / semestral / anual),
+      similar al catálogo de Vivam. Hoy `PlanTipo` es solo un enum sin precio.
+- [ ] Estados de suscripción: trial activo → vencido → pago → moroso → baja.
+- [ ] Integración de pagos con **dLocal** (mencionado en el copy como el procesador).
+      Checkout, webhooks de confirmación, reintentos.
+- [ ] Facturación / comprobantes por organización.
+- [ ] "Plan Cortesía CMD" ya existe como enum — falta el flujo de asignación y su vencimiento.
+- [ ] Panel de cobros para Admin CMD (quién pagó, quién debe, próximos vencimientos).
+
+## 2. Gimnasios — flujo completo
+
+- [ ] Onboarding de socios (alta masiva + ficha médica básica al registrarse).
+- [ ] Evaluación médica inicial obligatoria al dar de alta un socio.
+- [ ] Gestión por grupos y niveles (principiante / intermedio / avanzado, turnos).
+- [ ] Material / flujo de "capacitación del equipo de instructores" (incluida en la suscripción).
+- [ ] Vista y reportes pensados para el dueño del gimnasio (no cuerpo técnico deportivo).
+- [ ] Reducción de responsabilidad legal: registro auditable de evaluaciones y alertas.
+
+## 3. Deportista individual
+
+- [ ] **Alta self-serve**: registro directo desde la landing → crea una organización tipo
+      INDIVIDUAL + usuario DEPORTISTA + su Deportista, todo en un paso. Hoy lo crea Admin CMD.
+- [ ] **Variantes de perfil** dentro de INDIVIDUAL: fitness, runner, ciclista, triatleta, etc.
+      Cada variante puede ajustar:
+  - qué formularios / preguntas aplican,
+  - los umbrales del score (la carga y el dolor no pesan igual en un runner que en fitness),
+  - el copy y las recomendaciones.
+- [ ] Planes Individual vs Individual Premium (informes para médico, chequeo precompetitivo,
+      prioridad en red CMD) — hoy solo están en el enum y el copy.
+
+## 4. Web principal — branding y copy
+
+- [ ] **Sacar el encuadre personal / financiero del Dr. Manuel González** del footer y de donde
+      aparezca (hoy: "CMD — Cobertura Médica Deportiva · Dr. Manuel González · RUT: 220266830010").
+- [ ] **Agregar la atribución correcta**: *CMD Insight fue desarrollada por **CMD Tech**, la
+      unidad tecnológica de **Integra Medical Group**.*
+- [ ] Se puede mantener el ángulo de credibilidad médica ("desarrollada por médicos de emergencia
+      con experiencia en cobertura deportiva") sin nombrarlo como dueño / RUT.
+- [ ] Repasar todas las menciones a "Dr. Manuel González" en la landing:
+  - `components/site/Footer.tsx`
+  - `app/(site)/page.tsx` (sección "Por qué elegir CMD Insight")
+  - `app/(site)/como-funciona/page.tsx` si aplica
+- [ ] Otros detalles de copy de la web principal (a definir).
+
+## 5. Higiene técnica
+
+- [ ] Correr `npm run build` local y poner `typescript.ignoreBuildErrors: false` en `next.config.mjs`.
+- [ ] Reemplazar `public/cmd-insight-logo.jpeg` por el SVG oficial (ver `components/Logo.tsx`).
+- [ ] La sesión guarda rol y organización por 30 días; evaluar refrescar el token al cambiar
+      rol/organización de un usuario.
