@@ -71,39 +71,39 @@ function profileParams(profile: Profile, dayFromEnd: number, rand: () => number)
       return { rpe: 5 + n(), minutes: 80 + n() * 8, dolor: Math.max(0, 0.4 + n()), fatiga: 3 + n(), sueno: 4 + n() * 0.6, estres: 2 + n() };
     case "carga_alta":
       return {
-        rpe: (recent ? 8.4 : midRecent ? 6.5 : 4.6) + n(),
-        minutes: (recent ? 104 : 78) + n() * 8,
-        dolor: Math.max(0, (recent ? 2.4 : 0.8) + n()),
-        fatiga: (recent ? 6.4 : 3.6) + n(),
+        rpe: (recent ? 8.6 : midRecent ? 6.2 : 4.4) + n(),
+        minutes: (recent ? 108 : 76) + n() * 8,
+        dolor: Math.max(0, (recent ? 2.6 : 0.8) + n()),
+        fatiga: (recent ? 6.6 : 3.6) + n(),
         sueno: (recent ? 3 : 4) + n() * 0.5,
         estres: (recent ? 4.6 : 2.6) + n(),
       };
     case "fatiga_acumulada":
       return {
-        rpe: 6.4 + n(),
-        minutes: 88 + n() * 8,
-        dolor: Math.max(0, 1.6 + n()),
-        fatiga: (recent ? 8 : midRecent ? 6.6 : 5) + n(),
-        sueno: (recent ? 2 : 3) + n() * 0.5,
-        estres: (recent ? 6.4 : 4) + n(),
+        rpe: (recent ? 7.2 : 6) + n(),
+        minutes: (recent ? 96 : 84) + n() * 8,
+        dolor: Math.max(0, (recent ? 3.2 : 1.4) + n()),
+        fatiga: (recent ? 8.6 : midRecent ? 6.8 : 5) + n(),
+        sueno: (recent ? 1.8 : 3) + n() * 0.5,
+        estres: (recent ? 7.2 : 4) + n(),
       };
     case "dolor_persistente":
       return {
-        rpe: 6.6 + n(),
-        minutes: 90 + n() * 8,
-        dolor: (dayFromEnd < 8 ? 6.2 : 2.4) + n(),
-        fatiga: (recent ? 7.4 : 5) + n(),
-        sueno: (recent ? 2.4 : 3.4) + n() * 0.5,
-        estres: (recent ? 5.6 : 3.4) + n(),
+        rpe: (recent ? 8 : midRecent ? 6.2 : 5.2) + n(),
+        minutes: (recent ? 100 : 82) + n() * 8,
+        dolor: (dayFromEnd < 9 ? 6.6 : 2.4) + n(),
+        fatiga: (recent ? 8.6 : 5) + n(),
+        sueno: (recent ? 1.6 : 3.4) + n() * 0.5,
+        estres: (recent ? 7.4 : 3.4) + n(),
       };
     case "post_golpe":
       return {
-        rpe: (recent ? 7.4 : 6) + n(),
-        minutes: (recent ? 92 : 84) + n() * 8,
-        dolor: (dayFromEnd < 5 ? 6.6 : dayFromEnd < 9 ? 3 : 1) + n(),
-        fatiga: (recent ? 7 : 4.4) + n(),
-        sueno: (recent ? 2.6 : 3.8) + n() * 0.5,
-        estres: (recent ? 5 : 3) + n(),
+        rpe: (recent ? 8.2 : 5.8) + n(),
+        minutes: (recent ? 98 : 82) + n() * 8,
+        dolor: (dayFromEnd < 7 ? 6.8 : dayFromEnd < 10 ? 3 : 1) + n(),
+        fatiga: (recent ? 7.8 : 4.4) + n(),
+        sueno: (recent ? 2 : 3.8) + n() * 0.5,
+        estres: (recent ? 6 : 3) + n(),
       };
   }
 }
