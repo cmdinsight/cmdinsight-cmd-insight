@@ -1,0 +1,169 @@
+// Modelo de datos de CMD Insight — Fase 5 (plataforma real con roles y persistencia).
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum OrgTipo {
+  CLUB
+  GIMNASIO
+  INDIVIDUAL
+}
+
+enum PlanTipo {
+  TRIAL
+  CORTESIA_CMD
+  CLUB_MENSUAL
+  GIMNASIO
+  INDIVIDUAL
+  INDIVIDUAL_PREMIUM
+}
+
+enum Rol {
+  DEPORTISTA
+  ENTRENADOR
+  MEDICO
+  ADMIN_ORG
+  ADMIN_CMD
+}
+
+enum ZonaDolor {
+  NINGUNA
+  ISQUIOTIBIALES
+  CUADRICEPS
+  GEMELOS
+  ADUCTORES
+  RODILLA
+  TOBILLO
+  CADERA
+  ESPALDA
+  OTRA
+}
+
+model Organizacion {
+  id          String       @id @default(cuid())
+  nombre      String
+  tipo        OrgTipo
+  plan        PlanTipo     @default(TRIAL)
+  trialHasta  DateTime?
+  cmdCubierta Boolean      @default(false)
+  notas       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  usuarios    Usuario[]
+  deportistas Deportista[]
+  grupos      Grupo[]
+}
+
+model Usuario {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  nombre         String
+  passwordHash   String
+  rol            Rol           @default(DEPORTISTA)
+  activo         Boolean       @default(true)
+  organizacionId String?
+  organizacion   Organizacion? @relation(fields: [organizacionId], references: [id], onDelete: SetNull)
+  deportista     Deportista?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+// Categoría / grupo / nivel dentro de una organización
+// (ej. "Primera", "Sub-19", "Turno mañana", "Nivel avanzado").
+model Grupo {
+  id             String       @id @default(cuid())
+  nombre         String
+  organizacionId String
+  organizacion   Organizacion @relation(fields: [organizacionId], references: [id], onDelete: Cascade)
+  deportistas    Deportista[]
+  createdAt      DateTime     @default(now())
+}
+
+model Deportista {
+  id             String           @id @default(cuid())
+  nombre         String
+  fechaNac       DateTime?
+  posicion       String?
+  dorsal         Int?
+  activo         Boolean          @default(true)
+  organizacionId String
+  organizacion   Organizacion     @relation(fields: [organizacionId], references: [id], onDelete: Cascade)
+  grupoId        String?
+  grupo          Grupo?           @relation(fields: [grupoId], references: [id], onDelete: SetNull)
+  usuarioId      String?          @unique
+  usuario        Usuario?         @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  fichaMedica    FichaMedica?
+  controles      ControlDiario[]
+  semanales      ControlSemanal[]
+  eventos        EventoEspecial[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([organizacionId])
+}
+
+model FichaMedica {
+  id                  String     @id @default(cuid())
+  deportistaId        String     @unique
+  deportista          Deportista @relation(fields: [deportistaId], references: [id], onDelete: Cascade)
+  antecedentes        String?
+  lesionesPrevias     String?
+  medicacion          String?
+  chequeoPrecompFecha DateTime?
+  ecgInformado        Boolean    @default(false)
+  ecgNotas            String?
+  actualizadoPor      String?
+  updatedAt           DateTime   @updatedAt
+}
+
+model ControlDiario {
+  id           String     @id @default(cuid())
+  deportistaId String
+  deportista   Deportista @relation(fields: [deportistaId], references: [id], onDelete: Cascade)
+  fecha        DateTime   @db.Date
+  rpe          Int
+  minutos      Int
+  dolor        Int
+  zona         ZonaDolor  @default(NINGUNA)
+  fatiga       Int
+  sueno        Int
+  estres       Int
+  createdAt    DateTime   @default(now())
+
+  @@unique([deportistaId, fecha])
+  @@index([deportistaId])
+}
+
+model ControlSemanal {
+  id                     String     @id @default(cuid())
+  deportistaId           String
+  deportista             Deportista @relation(fields: [deportistaId], references: [id], onDelete: Cascade)
+  semanaInicio           DateTime   @db.Date
+  dolorPersistente       Boolean
+  dolorLimitoRendimiento Boolean
+  piernasPesadas         Int
+  horasSueno             Float
+  entrenoConDolor        Boolean
+  createdAt              DateTime   @default(now())
+
+  @@unique([deportistaId, semanaInicio])
+}
+
+model EventoEspecial {
+  id           String     @id @default(cuid())
+  deportistaId String
+  deportista   Deportista @relation(fields: [deportistaId], references: [id], onDelete: Cascade)
+  fecha        DateTime   @db.Date
+  tipos        String[]
+  comentario   String?
+  registradoPor String?
+  createdAt    DateTime   @default(now())
+
+  @@index([deportistaId])
+}

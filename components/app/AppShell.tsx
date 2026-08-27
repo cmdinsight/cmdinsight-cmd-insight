@@ -1,0 +1,61 @@
+import Link from "next/link";
+import Logo from "@/components/Logo";
+import type { SessionPayload } from "@/lib/session";
+import { ROL_LABEL, type Rol } from "@/lib/roles";
+import { AppNav, type NavItem } from "./AppNav";
+import { LogoutButton } from "./LogoutButton";
+
+function navFor(rol: Rol): NavItem[] {
+  switch (rol) {
+    case "DEPORTISTA":
+      return [
+        { href: "/app/mi", label: "Mi control" },
+        { href: "/app/mi/evolucion", label: "Mi evolución" },
+      ];
+    case "ENTRENADOR":
+    case "MEDICO":
+      return [{ href: "/app/plantel", label: "Plantel" }];
+    case "ADMIN_ORG":
+      return [
+        { href: "/app/organizacion", label: "Organización" },
+        { href: "/app/organizacion/deportistas", label: "Deportistas" },
+        { href: "/app/organizacion/usuarios", label: "Usuarios" },
+        { href: "/app/plantel", label: "Plantel" },
+      ];
+    case "ADMIN_CMD":
+      return [
+        { href: "/app/cmd", label: "Organizaciones" },
+        { href: "/app/plantel", label: "Plantel" },
+      ];
+  }
+}
+
+export function AppShell({
+  session,
+  children,
+}: {
+  session: SessionPayload;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-mist">
+      <header className="relative border-b border-line bg-white">
+        <div className="wrap flex h-14 items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/app" aria-label="CMD Insight">
+              <Logo height={26} />
+            </Link>
+            <AppNav items={navFor(session.rol)} />
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <span className="hidden text-slatey sm:inline">
+              {session.nombre} · {ROL_LABEL[session.rol]}
+            </span>
+            <LogoutButton />
+          </div>
+        </div>
+      </header>
+      <main className="wrap py-8">{children}</main>
+    </div>
+  );
+}

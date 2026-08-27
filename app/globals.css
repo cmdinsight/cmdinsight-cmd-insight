@@ -1,0 +1,205 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #173a63;
+  --teal: #0e9aa1;
+  --ink: #0f1b2d;
+  --slatey: #5b6b7f;
+  --line: #e4eaf1;
+  --mist: #f4f7fa;
+  --risk-low: #16a34a;
+  --risk-mod: #e08a00;
+  --risk-high: #dc2626;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+    background: #ffffff;
+  }
+  body {
+    color: var(--ink);
+    font-family: "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+  }
+  h1, h2, h3, h4 {
+    font-family: "Sora", system-ui, sans-serif;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+  }
+}
+
+@layer components {
+  .wrap {
+    max-width: 1120px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  .section {
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(15, 27, 45, 0.04), 0 8px 24px -12px rgba(15, 27, 45, 0.12);
+  }
+  .card-flat {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+    padding: 0.75rem 1.15rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1;
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-align: center;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-primary {
+    background: var(--navy);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: #0f2947;
+  }
+  .btn-accent {
+    background: var(--teal);
+    color: #fff;
+  }
+  .btn-accent:hover {
+    background: #0b7a80;
+  }
+  .btn-ghost {
+    background: #fff;
+    color: var(--navy);
+    border-color: var(--line);
+  }
+  .btn-ghost:hover {
+    background: var(--mist);
+  }
+  .btn-lg {
+    padding: 0.95rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .input {
+    border: 1px solid #cdd8e3;
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    width: 100%;
+    background: #fff;
+    font: inherit;
+    color: var(--ink);
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(14, 154, 161, 0.18);
+  }
+  .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--slatey);
+    margin-bottom: 0.35rem;
+    display: block;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--mist);
+    color: var(--navy);
+    border: 1px solid var(--line);
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--teal);
+  }
+
+  /* Semáforo de riesgo — SOLO para nivel de riesgo */
+  .risk-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 999px;
+    display: inline-block;
+    flex: none;
+  }
+  .risk-low { color: var(--risk-low); }
+  .risk-mod { color: var(--risk-mod); }
+  .risk-high { color: var(--risk-high); }
+
+  .risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .risk-badge.low { background: #e8f6ec; color: #15803d; }
+  .risk-badge.mod { background: #fbf0dc; color: #b45309; }
+  .risk-badge.high { background: #fbe6e6; color: #b91c1c; }
+
+  .hairline {
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* Slider de las escalas del simulador */
+input[type="range"].scale {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--teal), var(--navy));
+  outline: none;
+}
+input[type="range"].scale::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--navy);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(15, 27, 45, 0.25);
+}
+input[type="range"].scale::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  border: 3px solid var(--navy);
+  cursor: pointer;
+}
