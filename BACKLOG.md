@@ -50,6 +50,7 @@ Pendientes acordados, para retomar más adelante. Ordenado por bloque, no por pr
 ## 5. Higiene técnica
 
 - [ ] Correr `npm run build` local y poner `typescript.ignoreBuildErrors: false` en `next.config.mjs`.
-- [ ] Reemplazar `public/cmd-insight-logo.jpeg` por el SVG oficial (ver `components/Logo.tsx`).
+- [x] Logo pasado a SVG inline (`components/Logo.tsx`) — nítido, con variante light/dark. Es una
+      reinterpretación; **pendiente** reemplazar el isotipo por el SVG oficial cuando esté.
 - [ ] La sesión guarda rol y organización por 30 días; evaluar refrescar el token al cambiar
       rol/organización de un usuario.
