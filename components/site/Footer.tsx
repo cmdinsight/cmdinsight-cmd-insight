@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { LogoWordmark } from "@/components/Logo";
+import Logo from "@/components/Logo";
 
 export default function Footer() {
   return (
     <footer className="mt-24 bg-navy-deep text-white/80">
       <div className="wrap grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <LogoWordmark className="text-xl" />
+          <Logo variant="dark" height={30} />
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/70">
             La plataforma de prevención de lesiones y gestión médica deportiva.
             No solo cubrimos lesiones — las anticipamos.

@@ -1,41 +1,110 @@
-// Isotipo + wordmark oficial de CMD Insight.
-// Se recorta por CSS desde el JPEG de marca (public/cmd-insight-logo.jpeg),
-// que tiene mucho margen blanco alrededor del logo.
-// TODO: reemplazar por SVG oficial cuando esté disponible.
+// Logo de CMD Insight — SVG inline, nítido en cualquier tamaño y fondo.
+// `variant="dark"` para fondos oscuros (footer). Escala con `height`.
+// TODO: reemplazar el isotipo por el SVG oficial cuando esté disponible.
 
-type Props = { height?: number; className?: string };
+type Variant = "light" | "dark";
+type Props = { height?: number; className?: string; variant?: Variant; withWordmark?: boolean };
 
-// Región del logo dentro del JPEG 1536×1024 (x, y, w, h en px del original).
-const CROP = { x: 145, y: 350, w: 1140, h: 265 };
-const IMG_W = 1536;
-const IMG_H = 1024;
+const RATIO = 320 / 60; // viewBox del lockup completo
+const MARK_RATIO = 60 / 60;
 
-export default function Logo({ height = 34, className = "" }: Props) {
-  const s = height / CROP.h;
+function palette(v: Variant) {
+  return v === "dark"
+    ? { cmd: "rgba(255,255,255,0.65)", insight: "#ffffff", tag: "#5cc2c6", rule: "rgba(255,255,255,0.22)" }
+    : { cmd: "#5b6b7f", insight: "#173a63", tag: "#0e9aa1", rule: "rgba(15,27,45,0.14)" };
+}
+
+function Isotype({ id }: { id: string }) {
   return (
-    <span
-      className={className}
-      role="img"
-      aria-label="CMD Insight"
-      style={{
-        display: "inline-block",
-        height,
-        width: Math.round(CROP.w * s),
-        backgroundImage: "url(/cmd-insight-logo.jpeg)",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: `${Math.round(IMG_W * s)}px ${Math.round(IMG_H * s)}px`,
-        backgroundPosition: `-${Math.round(CROP.x * s)}px -${Math.round(CROP.y * s)}px`,
-      }}
-    />
+    <>
+      <defs>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#1c3f8f" />
+          <stop offset="0.55" stopColor="#128a9c" />
+          <stop offset="1" stopColor="#2fa958" />
+        </linearGradient>
+        <clipPath id={`${id}-c`}>
+          <path d="M2,30 Q30,8 58,30 Q30,52 2,30 Z" />
+        </clipPath>
+      </defs>
+      <path d="M2,30 Q30,8 58,30 Q30,52 2,30 Z" fill={`url(#${id}-g)`} />
+      <g
+        clipPath={`url(#${id}-c)`}
+        fill="none"
+        stroke="#fff"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="10,36 20,29 26,32 36,21 46,25" strokeWidth="2.3" />
+        <circle cx="10" cy="36" r="2" fill="#fff" stroke="none" />
+        <circle cx="26" cy="32" r="2" fill="#fff" stroke="none" />
+        <circle cx="46" cy="25" r="2" fill="#fff" stroke="none" />
+        <path d="M14,19 v6 M11,22 h6" strokeWidth="2.3" />
+        <circle cx="39" cy="20" r="2.2" fill="#fff" stroke="none" />
+        <path
+          d="M39,22.5 L35,30 M35,30 L40,37 M35,30 L30,34 M37,25 L43,23 M37,25 L32,28"
+          strokeWidth="2.4"
+        />
+      </g>
+    </>
   );
 }
 
-// Wordmark en texto para fondos oscuros (footer).
-export function LogoWordmark({ className = "" }: { className?: string }) {
+export default function Logo({
+  height = 32,
+  className = "",
+  variant = "light",
+  withWordmark = true,
+}: Props) {
+  const c = palette(variant);
+  const id = `cmdi-${variant}${withWordmark ? "" : "-m"}`;
+
+  if (!withWordmark) {
+    return (
+      <svg
+        height={height}
+        width={Math.round(height * MARK_RATIO)}
+        viewBox="0 0 60 60"
+        className={className}
+        role="img"
+        aria-label="CMD Insight"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g transform="translate(0,0)">
+          <Isotype id={id} />
+        </g>
+      </svg>
+    );
+  }
+
   return (
-    <span className={`font-display font-extrabold tracking-tight ${className}`}>
-      <span className="text-white/70">CMD</span>{" "}
-      <span className="text-white">Insight</span>
-    </span>
+    <svg
+      height={height}
+      width={Math.round(height * RATIO)}
+      viewBox="0 0 320 60"
+      className={className}
+      role="img"
+      aria-label="CMD Insight"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <Isotype id={id} />
+      <g fontFamily="Sora, system-ui, sans-serif">
+        <text x="74" y="34" fontSize="30" fontWeight="800" letterSpacing="0.5" fill={c.cmd}>
+          CMD
+        </text>
+        <text x="140" y="34" fontSize="30" fontWeight="800" letterSpacing="0.5" fill={c.insight}>
+          INSIGHT
+        </text>
+        <line x1="75" y1="42" x2="302" y2="42" stroke={c.rule} strokeWidth="1" />
+        <text x="75" y="55" fontSize="10.5" fontWeight="600" letterSpacing="3.2" fill={c.tag}>
+          SPORTS HEALTH INTELLIGENCE
+        </text>
+      </g>
+    </svg>
   );
+}
+
+// Compatibilidad: algunos lugares importaban LogoWordmark.
+export function LogoWordmark({ className = "" }: { className?: string }) {
+  return <Logo height={26} variant="dark" className={className} />;
 }
