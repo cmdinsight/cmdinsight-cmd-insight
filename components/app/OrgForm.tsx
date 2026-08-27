@@ -10,14 +10,7 @@ const TIPOS = [
   { v: "INDIVIDUAL", t: "Deportista individual" },
 ];
 
-const PLANES = [
-  "TRIAL",
-  "CORTESIA_CMD",
-  "CLUB_MENSUAL",
-  "GIMNASIO",
-  "INDIVIDUAL",
-  "INDIVIDUAL_PREMIUM",
-];
+const PLANES = ["TRIAL", "CORTESIA_CMD", "CLUB_MENSUAL", "GIMNASIO", "INDIVIDUAL"];
 
 export function OrgForm() {
   const router = useRouter();

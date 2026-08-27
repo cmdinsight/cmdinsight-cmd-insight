@@ -210,7 +210,7 @@ export default function HomePage() {
           <SectionHeading eyebrow="Para quién" title="Un modelo que escala con vos" />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {[
-              { h: "/clubes", t: "Clubes deportivos", d: "Gestioná la salud de todo el plantel con recursos médicos limitados. Suscripción incluida con planes de cobertura CMD para clubes AUF." },
+              { h: "/clubes", t: "Clubes deportivos", d: "Gestioná la salud de todo el plantel con recursos médicos limitados. Incluido para clubes con cobertura médica CMD durante los entrenamientos." },
               { h: "/gimnasios", t: "Gimnasios", d: "Ofrecé seguimiento médico profesional como parte de la experiencia del socio y reducí responsabilidad legal." },
               { h: "/deportistas", t: "Deportistas individuales", d: "Corredores, ciclistas, triatletas y amateurs: las mismas herramientas de prevención que usan los equipos profesionales." },
             ].map((s) => (

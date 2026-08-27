@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeading, Check, CTASection } from "@/components/site/ui";
+import { PRECIO_MENSUAL_UYU, precioUYU } from "@/lib/planes";
 
 export const metadata: Metadata = {
   title: "Para gimnasios",
@@ -73,6 +74,31 @@ export default function GimnasiosPage() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className="section pt-0">
+        <div className="wrap">
+          <div className="mx-auto max-w-md">
+            <div className="card p-7 text-center">
+              <div className="eyebrow">Plan Gimnasio</div>
+              <div className="mt-3 font-display text-4xl font-extrabold text-ink">
+                {precioUYU(PRECIO_MENSUAL_UYU.GIMNASIO)}
+                <span className="text-base font-semibold text-slatey"> / mes</span>
+              </div>
+              <div className="mt-1 text-xs text-slatey">Pesos uruguayos · hasta 200 socios</div>
+              <ul className="mx-auto mt-6 max-w-xs space-y-2 text-left">
+                <Check>Dashboard y formularios para todos los socios</Check>
+                <Check>Score de riesgo y alertas automáticas</Check>
+                <Check>Gestión por grupos y niveles</Check>
+                <Check>Capacitación del equipo de instructores incluida</Check>
+                <Check>30 días de prueba, sin tarjeta</Check>
+              </ul>
+              <a href="https://wa.me/59896276998" className="btn btn-accent mt-7 w-full">
+                Empezar la prueba de 30 días
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 

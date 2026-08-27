@@ -98,16 +98,16 @@ export function TrustStrip() {
     <section className="border-y border-line bg-mist">
       <div className="wrap grid gap-6 py-10 sm:grid-cols-3">
         <div>
-          <div className="font-display text-lg font-bold text-ink">Trial gratuito 30 días</div>
+          <div className="font-display text-lg font-bold text-ink">Prueba de 30 días</div>
           <p className="mt-1 text-sm text-slatey">Para todos los segmentos. Sin tarjeta requerida para comenzar.</p>
         </div>
         <div>
-          <div className="font-display text-lg font-bold text-ink">Pagos seguros con dLocal</div>
-          <p className="mt-1 text-sm text-slatey">Procesados por dLocal, plataforma líder en LATAM.</p>
+          <div className="font-display text-lg font-bold text-ink">Pagos por la web con dLocal</div>
+          <p className="mt-1 text-sm text-slatey">Los planes individuales se pagan online por dLocal, plataforma líder en LATAM.</p>
         </div>
         <div>
           <div className="font-display text-lg font-bold text-ink">Plan Cortesía CMD</div>
-          <p className="mt-1 text-sm text-slatey">Acceso gratuito asignado por CMD a instituciones seleccionadas.</p>
+          <p className="mt-1 text-sm text-slatey">Acceso sin costo que CMD asigna caso por caso a instituciones puntuales. No es automático.</p>
         </div>
       </div>
     </section>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSubmit, Row, FormMsg } from "./forms-shared";
 
-const PLANES = ["TRIAL", "CORTESIA_CMD", "CLUB_MENSUAL", "GIMNASIO", "INDIVIDUAL", "INDIVIDUAL_PREMIUM"];
+const PLANES = ["TRIAL", "CORTESIA_CMD", "CLUB_MENSUAL", "GIMNASIO", "INDIVIDUAL"];
 
 interface Org {
   id: string;

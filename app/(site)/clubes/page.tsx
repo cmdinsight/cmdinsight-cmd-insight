@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SectionHeading, CTASection } from "@/components/site/ui";
+import { SectionHeading, Check, CTASection } from "@/components/site/ui";
+import { PRECIO_MENSUAL_UYU, precioUYU } from "@/lib/planes";
 
 export const metadata: Metadata = {
   title: "Para clubes deportivos",
   description:
-    "CMD Insight centraliza la salud de todo el plantel y permite decisiones clínicas con datos reales. Suscripción incluida con planes de cobertura CMD para clubes AUF.",
+    "CMD Insight centraliza la salud de todo el plantel y permite decisiones clínicas con datos reales. Incluido para clubes con cobertura médica CMD durante entrenamientos.",
 };
 
 const CASOS = [
@@ -70,18 +71,36 @@ export default function ClubesPage() {
       </section>
 
       <section className="section pt-0">
-        <div className="wrap">
-          <div className="rounded-3xl border border-teal/30 bg-teal/[0.06] p-8 sm:p-10">
-            <div className="eyebrow">Incluido con plan mensual CMD</div>
-            <h2 className="mt-3 font-display text-2xl font-extrabold text-ink sm:text-3xl">
-              Suscripción anual a CMD Insight completamente gratis
+        <div className="wrap grid gap-6 md:grid-cols-2">
+          <div className="card p-8">
+            <div className="eyebrow">Plan Club</div>
+            <div className="mt-3 font-display text-4xl font-extrabold text-ink">
+              {precioUYU(PRECIO_MENSUAL_UYU.CLUB_MENSUAL)}
+              <span className="text-base font-semibold text-slatey"> / mes</span>
+            </div>
+            <div className="mt-1 text-xs text-slatey">Pesos uruguayos · plantel completo</div>
+            <ul className="mt-5 space-y-2">
+              <Check>Ficha digital y dashboard de todo el plantel</Check>
+              <Check>Score de riesgo, alertas y conducta sugerida</Check>
+              <Check>Informe semanal de estado de plantel</Check>
+              <Check>30 días de prueba, sin tarjeta</Check>
+            </ul>
+            <a href="https://wa.me/59896276998" className="btn btn-primary btn-lg mt-6 w-full">
+              Empezar la prueba
+            </a>
+          </div>
+
+          <div className="rounded-3xl border border-teal/30 bg-teal/[0.06] p-8">
+            <div className="eyebrow">Incluido con cobertura CMD diaria</div>
+            <h2 className="mt-3 font-display text-2xl font-extrabold text-ink">
+              Sin costo adicional para clubes con cobertura médica CMD durante entrenamientos
             </h2>
-            <p className="mt-3 max-w-2xl text-slatey">
-              Con cualquier plan mensual de cobertura médica CMD para clubes AUF. Consultá los
-              planes disponibles con nuestro equipo comercial.
+            <p className="mt-3 text-slatey">
+              Si tu club tiene un plan mensual de CMD que cubre los entrenamientos (no solo los
+              partidos), CMD Insight va incluido. Consultá tu plan con el equipo comercial.
             </p>
             <a href="https://wa.me/59896276998" className="btn btn-accent btn-lg mt-6">
-              Hablar con el equipo comercial
+              Consultar mi plan CMD
             </a>
           </div>
         </div>

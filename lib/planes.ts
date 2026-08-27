@@ -4,7 +4,6 @@ export const PLAN_LABEL: Record<string, string> = {
   CLUB_MENSUAL: "Club — mensual",
   GIMNASIO: "Gimnasio",
   INDIVIDUAL: "Individual",
-  INDIVIDUAL_PREMIUM: "Individual Premium",
 };
 
 export const ORG_TIPO_LABEL: Record<string, string> = {
@@ -12,3 +11,15 @@ export const ORG_TIPO_LABEL: Record<string, string> = {
   GIMNASIO: "Gimnasio",
   INDIVIDUAL: "Deportista individual",
 };
+
+// Precios de lista, en pesos uruguayos por mes. Fuente única para la web.
+// El cobro (dLocal, sobre todo para los planes individuales) queda en el backlog.
+export const PRECIO_MENSUAL_UYU: Record<string, number> = {
+  CLUB_MENSUAL: 4500,
+  GIMNASIO: 8500,
+  INDIVIDUAL: 160,
+};
+
+export function precioUYU(n: number): string {
+  return "$" + n.toLocaleString("es-UY");
+}

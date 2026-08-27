@@ -4,14 +4,7 @@ import { requireApi, json, handler } from "@/lib/api";
 
 export const runtime = "nodejs";
 
-const PLANES = new Set([
-  "TRIAL",
-  "CORTESIA_CMD",
-  "CLUB_MENSUAL",
-  "GIMNASIO",
-  "INDIVIDUAL",
-  "INDIVIDUAL_PREMIUM",
-]);
+const PLANES = new Set(["TRIAL", "CORTESIA_CMD", "CLUB_MENSUAL", "GIMNASIO", "INDIVIDUAL"]);
 
 export const PATCH = handler(async (req: NextRequest, ctx: { params: { id: string } }) => {
   await requireApi("ADMIN_CMD");

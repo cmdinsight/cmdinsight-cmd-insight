@@ -21,7 +21,6 @@ enum PlanTipo {
   CLUB_MENSUAL
   GIMNASIO
   INDIVIDUAL
-  INDIVIDUAL_PREMIUM
 }
 
 enum Rol {
