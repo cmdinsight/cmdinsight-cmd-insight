@@ -34,6 +34,7 @@ export default function PlayerPage({ params }: { params: { id: string } }) {
           events={player.events}
           weekly={player.weekly}
           medico
+          conducta
         />
       </div>
     </div>

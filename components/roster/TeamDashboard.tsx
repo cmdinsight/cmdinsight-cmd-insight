@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { RiskResult } from "@/lib/score/engine";
 import { RiskBadge, TrendArrow } from "@/components/risk/RiskBadge";
 import { SimpleBars } from "@/components/charts/Charts";
+import { resumenConducta } from "@/lib/score/recomendaciones";
 import type { EmergenteEntry } from "@/lib/roster";
 
 export type { EmergenteEntry };
@@ -77,6 +78,33 @@ export function TeamDashboard({
               </div>
             ))}
           </div>
+
+          {/* Requieren conducta preventiva */}
+          {ranked.filter((p) => p.risk.score >= 3).length > 0 && (
+            <div className="card mt-4 overflow-hidden">
+              <div className="border-b border-line p-4 font-display text-sm font-bold text-ink">
+                Requieren conducta preventiva
+              </div>
+              <ul className="divide-y divide-line">
+                {ranked
+                  .filter((p) => p.risk.score >= 3)
+                  .map((p) => (
+                    <li key={p.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 p-4">
+                      <Link href={`${linkBase}/${p.id}`} className="font-semibold text-ink hover:underline">
+                        {p.nombre}
+                      </Link>
+                      <RiskBadge score={p.risk.score} />
+                      <span className="w-full text-sm text-slatey sm:w-auto sm:flex-1">
+                        {resumenConducta(p.risk)}
+                      </span>
+                      <Link href={`${linkBase}/${p.id}`} className="text-sm font-semibold text-navy">
+                        Ver conducta →
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
 
           <div className="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
             <div className="card overflow-hidden">

@@ -44,6 +44,7 @@ export default async function PlantelPlayerPage({ params }: { params: { id: stri
           events={d.events}
           weekly={d.weekly}
           medico={esMedico}
+          conducta
         />
       </div>
 

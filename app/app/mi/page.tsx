@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { getMiDeportista } from "@/lib/data/deportistas";
+import { daysAgo } from "@/lib/score/engine";
 import { RiskBadge } from "@/components/risk/RiskBadge";
 
 export const dynamic = "force-dynamic";
@@ -27,32 +28,53 @@ export default async function MiPage() {
     );
   }
 
+  const individual = d.organizacion?.tipo === "INDIVIDUAL";
+  const today = new Date().toISOString().slice(0, 10);
+  const diasCompletados = new Set(
+    d.dailyLogs.filter((l) => {
+      const x = daysAgo(l.date, today);
+      return x >= 0 && x < 7;
+    }).map((l) => l.date),
+  ).size;
+
   return (
     <div className="mx-auto max-w-2xl">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink">Hola, {d.nombre}</h1>
           <p className="mt-1 text-sm text-slatey">
-            Completá tus formularios con sinceridad. Nos ayuda a cuidar tu salud y prevenir lesiones.
+            Completá tus formularios con sinceridad. Es rápido y nos ayuda a cuidar tu salud.
           </p>
         </div>
-        <RiskBadge score={d.risk.score} trend={d.risk.trend} />
+        {individual && <RiskBadge score={d.risk.score} trend={d.risk.trend} />}
       </div>
 
-      <Link
-        href="/app/mi/evolucion"
-        className="mt-6 flex items-center justify-between rounded-2xl border border-line bg-white p-5 hover:shadow-card"
-      >
-        <div>
-          <div className="text-sm text-slatey">Tu score de riesgo hoy</div>
-          <div className="font-display text-3xl font-extrabold text-ink">
-            {d.risk.score}
-            <span className="text-lg text-slatey">/7</span> · {d.risk.semaphore.label}
+      {individual ? (
+        <Link
+          href="/app/mi/evolucion"
+          className="mt-6 flex items-center justify-between rounded-2xl border border-line bg-white p-5 hover:shadow-card"
+        >
+          <div>
+            <div className="text-sm text-slatey">Tu score de riesgo hoy</div>
+            <div className="font-display text-3xl font-extrabold text-ink">
+              {d.risk.score}
+              <span className="text-lg text-slatey">/7</span> · {d.risk.semaphore.label}
+            </div>
+            <div className="mt-1 text-sm text-slatey">{d.risk.semaphore.accion}</div>
           </div>
-          <div className="mt-1 text-sm text-slatey">{d.risk.semaphore.accion}</div>
+          <span className="text-navy">Ver detalle →</span>
+        </Link>
+      ) : (
+        <div className="mt-6 rounded-2xl border border-line bg-white p-5">
+          <div className="text-sm text-slatey">Tu constancia esta semana</div>
+          <div className="font-display text-3xl font-extrabold text-ink">
+            {diasCompletados}<span className="text-lg text-slatey">/7 días</span>
+          </div>
+          <p className="mt-1 text-sm text-slatey">
+            Cuantos más días completás, mejor te podemos cuidar.
+          </p>
         </div>
-        <span className="text-navy">Ver detalle →</span>
-      </Link>
+      )}
 
       <div className="mt-6 grid gap-4">
         {FORMS.map((f) => (
@@ -65,6 +87,13 @@ export default async function MiPage() {
           </Link>
         ))}
       </div>
+
+      {!individual && (
+        <p className="mt-6 rounded-xl bg-mist p-4 text-sm text-slatey">
+          El cuerpo técnico y el equipo médico revisan tus datos. Si hay algo para ajustar en tu
+          entrenamiento, te lo van a decir ellos. Vos solo cargá cómo te sentís.
+        </p>
+      )}
     </div>
   );
 }

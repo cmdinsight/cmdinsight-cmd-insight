@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Field, ChipScale, YesNo } from "@/components/demo/fields";
 import { FormResult } from "@/components/demo/FormResult";
+import { FormConfirmacion } from "@/components/app/FormConfirmacion";
 
 function weekStartISO(): string {
   const d = new Date();
@@ -21,8 +22,10 @@ export default function ControlSemanalPage() {
   const [result, setResult] = useState<any>(null);
 
   if (result) {
-    return (
-      <FormResult risk={result} title="Seguimiento semanal cargado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" />
+    return result.mostrarRiesgo && result.risk ? (
+      <FormResult risk={result.risk} title="Seguimiento semanal cargado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" />
+    ) : (
+      <FormConfirmacion titulo="Seguimiento semanal cargado" />
     );
   }
 
@@ -55,7 +58,7 @@ export default function ControlSemanalPage() {
       setLoading(false);
       return;
     }
-    setResult(data.risk);
+    setResult(data);
   };
 
   return (

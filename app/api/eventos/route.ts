@@ -13,6 +13,7 @@ export const POST = handler(async (req: NextRequest) => {
 
   let deportistaId: string;
   let registradoPor: string | null = null;
+  let mostrarRiesgo = true;
 
   if (body.deportistaId && STAFF.has(s.rol)) {
     const d = await prisma.deportista.findUnique({ where: { id: String(body.deportistaId) } });
@@ -21,11 +22,15 @@ export const POST = handler(async (req: NextRequest) => {
     deportistaId = d.id;
     registradoPor = s.nombre;
   } else {
-    const d = await prisma.deportista.findFirst({ where: { usuarioId: s.sub } });
+    const d = await prisma.deportista.findFirst({
+      where: { usuarioId: s.sub },
+      include: { organizacion: { select: { tipo: true } } },
+    });
     if (!d) throw new ApiError(400, "Tu usuario no está vinculado a un perfil de deportista.");
     deportistaId = d.id;
+    mostrarRiesgo = d.organizacion?.tipo === "INDIVIDUAL";
   }
 
   const risk = await saveEvento(deportistaId, { ...body, registradoPor });
-  return json({ ok: true, risk });
+  return json({ ok: true, mostrarRiesgo, risk: mostrarRiesgo ? risk : null });
 });

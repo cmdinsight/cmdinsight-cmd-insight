@@ -5,13 +5,15 @@ import { ROL_LABEL, type Rol } from "@/lib/roles";
 import { AppNav, type NavItem } from "./AppNav";
 import { LogoutButton } from "./LogoutButton";
 
-function navFor(rol: Rol): NavItem[] {
+function navFor(rol: Rol, athleteIndividual: boolean): NavItem[] {
   switch (rol) {
     case "DEPORTISTA":
-      return [
-        { href: "/app/mi", label: "Mi control" },
-        { href: "/app/mi/evolucion", label: "Mi evolución" },
-      ];
+      return athleteIndividual
+        ? [
+            { href: "/app/mi", label: "Mi control" },
+            { href: "/app/mi/evolucion", label: "Mi evolución" },
+          ]
+        : [{ href: "/app/mi", label: "Mi control" }];
     case "ENTRENADOR":
     case "MEDICO":
       return [{ href: "/app/plantel", label: "Plantel" }];
@@ -32,9 +34,11 @@ function navFor(rol: Rol): NavItem[] {
 
 export function AppShell({
   session,
+  athleteIndividual = false,
   children,
 }: {
   session: SessionPayload;
+  athleteIndividual?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -45,7 +49,7 @@ export function AppShell({
             <Link href="/app" aria-label="CMD Insight">
               <Logo height={26} />
             </Link>
-            <AppNav items={navFor(session.rol)} />
+            <AppNav items={navFor(session.rol, athleteIndividual)} />
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="hidden text-slatey sm:inline">

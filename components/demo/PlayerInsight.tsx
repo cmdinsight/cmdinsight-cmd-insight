@@ -8,6 +8,7 @@ import { analyzeTrend } from "@/lib/score/trend";
 import type { DailyLog, SpecialEvent, WeeklyLog } from "@/lib/score/types";
 import { SemaphorePanel } from "@/components/risk/Semaphore";
 import { LoadBars, Sparkline } from "@/components/charts/Charts";
+import { RecomendacionesPanel } from "@/components/roster/RecomendacionesPanel";
 
 function scoreHistory(dailyLogs: DailyLog[], events: SpecialEvent[], asOf: string, days = 14) {
   const out: number[] = [];
@@ -24,11 +25,14 @@ export function PlayerInsight({
   events,
   weekly,
   medico = false,
+  conducta = false,
 }: {
   dailyLogs: DailyLog[];
   events: SpecialEvent[];
   weekly?: WeeklyLog | null;
   medico?: boolean;
+  /** Mostrar el panel de conducta preventiva sugerida (cuerpo técnico / médico / individual). */
+  conducta?: boolean;
 }) {
   const risk: RiskResult = computeRisk({ dailyLogs, events, weekly });
   const trend = analyzeTrend(dailyLogs, events, risk.asOf);
@@ -44,8 +48,11 @@ export function PlayerInsight({
   const history = scoreHistory(dailyLogs, events, risk.asOf);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-      <div className="space-y-6">
+    <div className="space-y-6">
+      {conducta && <RecomendacionesPanel risk={risk} trend={trend} />}
+
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+        <div className="space-y-6">
         <SemaphorePanel score={risk.score} breakdown={risk.breakdown} />
 
         <div className="card p-5">
@@ -149,6 +156,7 @@ export function PlayerInsight({
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PAIN_ZONES, type PainZone } from "@/lib/score/types";
 import { Field, ChipScale, SleepScale } from "@/components/demo/fields";
 import { FormResult } from "@/components/demo/FormResult";
+import { FormConfirmacion } from "@/components/app/FormConfirmacion";
 
 export default function ControlDiarioPage() {
   const [rpe, setRpe] = useState<number | null>(null);
@@ -18,13 +19,15 @@ export default function ControlDiarioPage() {
   const [result, setResult] = useState<any>(null);
 
   if (result) {
-    return (
+    return result.mostrarRiesgo && result.risk ? (
       <FormResult
-        risk={result}
+        risk={result.risk}
         title="Control diario cargado"
         backHref="/app/mi"
         evolucionHref="/app/mi/evolucion"
       />
+    ) : (
+      <FormConfirmacion titulo="Control diario cargado" />
     );
   }
 
@@ -59,7 +62,7 @@ export default function ControlDiarioPage() {
       setLoading(false);
       return;
     }
-    setResult(data.risk);
+    setResult(data);
   };
 
   return (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SPECIAL_EVENT_TYPES, type SpecialEventType } from "@/lib/score/types";
 import { Field, MultiChips } from "@/components/demo/fields";
 import { FormResult } from "@/components/demo/FormResult";
+import { FormConfirmacion } from "@/components/app/FormConfirmacion";
 
 export default function EventoPage() {
   const [tipos, setTipos] = useState<SpecialEventType[]>([]);
@@ -13,8 +14,10 @@ export default function EventoPage() {
   const [result, setResult] = useState<any>(null);
 
   if (result) {
-    return (
-      <FormResult risk={result} title="Evento especial registrado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" />
+    return result.mostrarRiesgo && result.risk ? (
+      <FormResult risk={result.risk} title="Evento especial registrado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" />
+    ) : (
+      <FormConfirmacion titulo="Evento especial registrado" />
     );
   }
 
@@ -40,7 +43,7 @@ export default function EventoPage() {
       setLoading(false);
       return;
     }
-    setResult(data.risk);
+    setResult(data);
   };
 
   return (

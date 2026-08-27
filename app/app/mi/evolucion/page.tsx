@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { getMiDeportista } from "@/lib/data/deportistas";
 import { PlayerInsight } from "@/components/demo/PlayerInsight";
@@ -13,6 +14,9 @@ export default async function MiEvolucionPage() {
     return <div className="card p-6 text-sm text-slatey">Tu usuario no está vinculado a un perfil de deportista.</div>;
   }
 
+  // Los deportistas de una institución no ven su score; lo maneja el cuerpo técnico.
+  if (d.organizacion?.tipo !== "INDIVIDUAL") redirect("/app/mi");
+
   return (
     <div className="mx-auto max-w-4xl">
       <div className="flex items-center justify-between">
@@ -20,10 +24,11 @@ export default async function MiEvolucionPage() {
         <Link href="/app/mi" className="btn btn-ghost">Volver</Link>
       </div>
       <p className="mt-2 text-sm text-slatey">
-        Este es el mismo cálculo que ve tu cuerpo técnico. Cuanto más completás los formularios, más preciso es.
+        Cuanto más completás los formularios, más preciso es. Ante cualquier duda, consultá con un
+        profesional.
       </p>
       <div className="mt-6">
-        <PlayerInsight dailyLogs={d.dailyLogs} events={d.events} weekly={d.weekly} />
+        <PlayerInsight dailyLogs={d.dailyLogs} events={d.events} weekly={d.weekly} conducta />
       </div>
     </div>
   );
