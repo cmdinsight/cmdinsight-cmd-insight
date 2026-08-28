@@ -14,14 +14,18 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
 - [ ] Estados de suscripción: trial activo → vencido → pago → moroso → baja.
 - [ ] Integración de pagos con **dLocal** — pagos por la web, sobre todo el plan individual.
       Checkout, webhooks de confirmación, reintentos.
-  - Cuenta dLocal Go: **González Guerrero Manuel Alejandro y Arredondo Diez Camila** (sociedad de
-    hecho), RUT **220266830010**, Uruguay. Tel. registrado +598 98 052210.
-  - Requisitos de validación de merchant: HECHO en la web → `/terminos`, `/privacidad`,
-    `/contacto` (formulario funcional + bandeja en `/app/cmd/mensajes`), línea legal en el footer.
-  - **Falta:** (1) en dLocal Go cambiar el sitio de `cmdinsight.lovable.app` a la URL real;
-    (2) conectar el subdominio definitivo de `cmd.uy`; (3) confirmar el nombre legal completo
-    (en dLocal aparece cortado: "...CAMILA -"); (4) decidir qué teléfono público se muestra;
-    (5) recién ahí pedirle a dLocal (Bruna) que valide.
+  - Cuenta dLocal Go: **González Guerrero Manuel Alejandro y Arredondo Diez Camila - Sociedad de
+    Hecho**, RUT **220266830010**, Uruguay. Teléfono público del negocio: **+598 96 276 998**
+    (el registrado en dLocal Go es +598 98 052210 — conviene unificarlo).
+  - Requisitos de validación de merchant — HECHO en la web: `/terminos`, `/privacidad`, `/contacto`
+    (formulario probado y funcionando + bandeja en `/app/cmd/mensajes`), línea legal en el footer,
+    datos legales centralizados en `lib/legal.ts`. Sin redes sociales (dLocal lo prefiere a íconos rotos).
+  - **Falta (bloqueado por el dominio):**
+    1. Conseguir el subdominio definitivo — va a ser un subdominio de **`cmdtech.uy`** (todavía no lo tienen).
+    2. Conectar ese subdominio a Vercel.
+    3. En dLocal Go → Datos de la empresa → cambiar el sitio de `cmdinsight.lovable.app` a esa URL.
+    4. (Opcional) actualizar el teléfono en dLocal Go a +598 96 276 998.
+    5. Recién ahí avisarle a Bruna (dLocal) para que revise / valide.
 - [ ] Facturación / comprobantes por organización.
 - [ ] Flujo de asignación del Plan Cortesía CMD y su vencimiento.
 - [ ] Panel de cobros para Admin CMD (quién pagó, quién debe, próximos vencimientos).

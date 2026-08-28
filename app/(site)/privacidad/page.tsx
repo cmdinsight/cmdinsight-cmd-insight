@@ -13,8 +13,8 @@ export default function PrivacidadPage() {
     <LegalDoc title="Política de Privacidad" actualizado="agosto de 2026">
       <Section h="1. Responsable del tratamiento">
         <P>
-          El responsable del tratamiento de los datos es {LEGAL.razonSocial} ({LEGAL.formaJuridica}),
-          RUT {LEGAL.rut}, {LEGAL.pais}. Consultas sobre tus datos: {CONTACTO.email}.
+          El responsable del tratamiento de los datos es {LEGAL.razonSocial}, RUT {LEGAL.rut},{" "}
+          {LEGAL.pais}. Consultas sobre tus datos: {CONTACTO.email}.
         </P>
         <P>
           El tratamiento se realiza conforme a la Ley N° 18.331 de Protección de Datos Personales

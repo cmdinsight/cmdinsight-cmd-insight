@@ -14,9 +14,9 @@ export default function TerminosPage() {
     <LegalDoc title="Términos y Condiciones" actualizado="agosto de 2026">
       <Section h="1. Quién presta el servicio">
         <P>
-          CMD Insight es operado por {LEGAL.razonSocial} ({LEGAL.formaJuridica}), RUT {LEGAL.rut},
-          con domicilio en {LEGAL.pais} (en adelante, &ldquo;CMD Insight&rdquo; o &ldquo;nosotros&rdquo;).
-          La plataforma fue desarrollada por {LEGAL.desarrolladaPor}.
+          CMD Insight es operado por {LEGAL.razonSocial}, RUT {LEGAL.rut}, con domicilio en{" "}
+          {LEGAL.pais} (en adelante, &ldquo;CMD Insight&rdquo; o &ldquo;nosotros&rdquo;). La
+          plataforma fue desarrollada por {LEGAL.desarrolladaPor}.
         </P>
         <P>
           Para cualquier consulta relativa a estos términos, al servicio o a un cobro, podés
