@@ -2,9 +2,17 @@
 // Todo es determinístico (PRNG con semilla) para que server y cliente coincidan.
 // Los scores NO están hardcodeados: salen de pasar estos datos por computeRisk().
 
-import type { DailyLog, PainZone, SpecialEvent, SpecialEventType } from "@/lib/score/types";
+import type {
+  DailyLog,
+  PainZone,
+  PerfilDeportista,
+  SpecialEvent,
+  SpecialEventType,
+  TipoDolor,
+} from "@/lib/score/types";
 import { computeRisk, type RiskResult } from "@/lib/score/engine";
 import { analyzeTrend, type TrendAnalysis } from "@/lib/score/trend";
+import { getPerfil } from "@/lib/score/perfiles";
 
 export const DEMO_AS_OF = "2026-08-25";
 export const DEMO_TEAM = "Plantel Primera · Club Demo CMD";
@@ -188,3 +196,162 @@ export function getPlayer(id: string): DemoPlayer | undefined {
 
 // El deportista "logueado" en la demo del formulario (Formulario 1/2/3).
 export const DEMO_ATHLETE_ID = "j-pereira";
+
+// ---------------------------------------------------------------------------
+// Deportista demo por disciplina (perfil). El visitante elige qué perfil
+// simular en /demo/deportista; cada uno trae su propio historial de 35 días,
+// con los campos que le corresponden (km, tipo de dolor, trabajo al fallo).
+// ---------------------------------------------------------------------------
+
+interface PerfilDemo {
+  archetype: Profile;
+  seed: number;
+  nombre: string;
+  contexto: string;
+  zona: PainZone;
+  /** [km por sesión fuera de la última semana, km por sesión en la última semana] */
+  km?: [number, number];
+  evento?: SpecialEvent;
+}
+
+const DEMO_PERFIL: Record<Exclude<PerfilDeportista, "EQUIPO">, PerfilDemo> = {
+  CORREDOR: {
+    archetype: "dolor_persistente",
+    seed: 201,
+    nombre: "Camila Rossi",
+    contexto: "10K y media maratón. Subió el volumen semanal las últimas 2 semanas.",
+    zona: "Tibia",
+    km: [9, 15],
+    evento: {
+      date: isoMinus(DEMO_AS_OF, 3),
+      tipos: ["Sobrecarga progresiva"] as SpecialEventType[],
+      comentario: "Molestia en la canilla al terminar el fondo largo.",
+    },
+  },
+  CICLISTA: {
+    archetype: "dolor_persistente",
+    seed: 202,
+    nombre: "Diego Lema",
+    contexto: "Ruta, 250–350 km por semana. Bloque de montaña.",
+    zona: "Rodilla",
+    km: [55, 72],
+    evento: {
+      date: isoMinus(DEMO_AS_OF, 6),
+      tipos: ["Molestia articular bajo carga"] as SpecialEventType[],
+      comentario: "Puntada en la rodilla en una subida larga.",
+    },
+  },
+  TRIATLETA: {
+    archetype: "fatiga_acumulada",
+    seed: 203,
+    nombre: "Paula Sosa",
+    contexto: "Medio Ironman en 8 semanas. Nado + bici + corrida casi todos los días.",
+    zona: "Tendón de Aquiles",
+    km: [12, 17],
+    evento: {
+      date: isoMinus(DEMO_AS_OF, 4),
+      tipos: ["Sobrecarga progresiva"] as SpecialEventType[],
+    },
+  },
+  FUERZA: {
+    archetype: "dolor_persistente",
+    seed: 204,
+    nombre: "Martín Elizalde",
+    contexto: "Powerlifting, bloque de fuerza. Trabajo pesado 4 veces por semana.",
+    zona: "Hombro",
+    evento: {
+      date: isoMinus(DEMO_AS_OF, 5),
+      tipos: ["Molestia articular bajo carga"] as SpecialEventType[],
+      comentario: "Molestia en el hombro en press de banca pesado.",
+    },
+  },
+  FITNESS: {
+    archetype: "estable",
+    seed: 205,
+    nombre: "Lucía Fernández",
+    contexto: "Entrena para estar en forma, 3–4 veces por semana.",
+    zona: "Lumbar",
+  },
+};
+
+function buildPerfilLogs(perfil: Exclude<PerfilDeportista, "EQUIPO">): DailyLog[] {
+  const cfg = DEMO_PERFIL[perfil];
+  const perfilCfg = getPerfil(perfil);
+  const rand = rng(cfg.seed);
+  const logs: DailyLog[] = [];
+
+  for (let d = HISTORY_DAYS - 1; d >= 0; d--) {
+    const dow = new Date(Date.parse(DEMO_AS_OF + "T00:00:00Z") - d * 86_400_000).getUTCDay();
+    const isRest = dow === 0 && rand() > 0.15;
+    const recent = d < 7;
+    const p = profileParams(cfg.archetype, d, rand)!;
+    const dolor = clamp(p.dolor, 0, 10);
+    const hasPain = dolor >= 2;
+
+    const log: DailyLog = {
+      date: isoMinus(DEMO_AS_OF, d),
+      rpe: isRest ? clamp(1 + rand() * 1.5, 0, 10) : clamp(p.rpe, 2, 10),
+      minutes: isRest ? clamp(20 + rand() * 15, 0, 200) : clamp(p.minutes, 30, 140),
+      dolor,
+      zona: hasPain ? cfg.zona : "Ninguna",
+      fatiga: clamp(p.fatiga, 0, 10),
+      sueno: clamp(p.sueno, 1, 5),
+      estres: clamp(p.estres, 0, 10),
+    };
+
+    if (perfilCfg.campos.km && cfg.km) {
+      const [base, now] = cfg.km;
+      log.km = isRest ? 0 : Math.max(0, Math.round(((recent ? now : base) + (rand() * 2 - 1) * 2) * 10) / 10);
+    }
+    if (perfilCfg.campos.tipoDolor && hasPain) {
+      // El dolor alto y sostenido en la articulación es la señal; el dolor bajo
+      // se toma como muscular (agujetas), esperable post-entreno de fuerza.
+      log.tipoDolor = (dolor >= 5 ? "articular" : "muscular") as TipoDolor;
+    }
+    if (perfilCfg.campos.entrenoAlFallo && !isRest) {
+      log.entrenoAlFallo = recent ? rand() > 0.35 : rand() > 0.6;
+    }
+
+    logs.push(log);
+  }
+  return logs;
+}
+
+export interface DemoAthlete {
+  perfil: PerfilDeportista;
+  nombre: string;
+  contexto: string;
+  dailyLogs: DailyLog[];
+  events: SpecialEvent[];
+}
+
+const athleteCache = new Map<PerfilDeportista, DemoAthlete>();
+
+export function getDemoAthlete(perfil: PerfilDeportista): DemoAthlete {
+  const hit = athleteCache.get(perfil);
+  if (hit) return hit;
+
+  let athlete: DemoAthlete;
+  if (perfil === "EQUIPO") {
+    const base = getPlayer(DEMO_ATHLETE_ID);
+    athlete = {
+      perfil,
+      nombre: base?.nombre ?? "Joaquín Pereira",
+      contexto: "Volante de primera división. Deporte de equipo (RPE × minutos).",
+      dailyLogs: base?.dailyLogs ?? [],
+      events: base?.events ?? [],
+    };
+  } else {
+    const cfg = DEMO_PERFIL[perfil];
+    athlete = {
+      perfil,
+      nombre: cfg.nombre,
+      contexto: cfg.contexto,
+      dailyLogs: buildPerfilLogs(perfil),
+      events: cfg.evento ? [cfg.evento] : [],
+    };
+  }
+
+  athleteCache.set(perfil, athlete);
+  return athlete;
+}

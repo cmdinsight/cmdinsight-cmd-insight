@@ -1,18 +1,21 @@
 // Estado local del deportista en la demo (no hay backend real).
 // Se guarda en localStorage del navegador — privado de ese dispositivo.
 
-import type { DailyLog, WeeklyLog, SpecialEvent } from "@/lib/score/types";
-import { getPlayer, DEMO_ATHLETE_ID } from "@/lib/demo/data";
+import type { DailyLog, WeeklyLog, SpecialEvent, PerfilDeportista } from "@/lib/score/types";
+import { getDemoAthlete } from "@/lib/demo/data";
+import { DEFAULT_PERFIL } from "@/lib/score/perfiles";
 
 const KEY = "cmd-insight-demo-v1";
 
 export interface LocalState {
+  /** Disciplina que el visitante eligió simular. */
+  perfil: PerfilDeportista;
   daily: DailyLog[];
   weekly: WeeklyLog[];
   events: SpecialEvent[];
 }
 
-const EMPTY: LocalState = { daily: [], weekly: [], events: [] };
+const EMPTY: LocalState = { perfil: DEFAULT_PERFIL, daily: [], weekly: [], events: [] };
 
 export function loadState(): LocalState {
   if (typeof window === "undefined") return EMPTY;
@@ -21,6 +24,7 @@ export function loadState(): LocalState {
     if (!raw) return EMPTY;
     const parsed = JSON.parse(raw) as Partial<LocalState>;
     return {
+      perfil: (parsed.perfil as PerfilDeportista) ?? DEFAULT_PERFIL,
       daily: parsed.daily ?? [],
       weekly: parsed.weekly ?? [],
       events: parsed.events ?? [],
@@ -37,6 +41,15 @@ export function saveState(s: LocalState) {
   } catch {
     /* almacenamiento no disponible */
   }
+}
+
+export function loadPerfil(): PerfilDeportista {
+  return loadState().perfil;
+}
+
+/** Cambiar de disciplina reinicia las entradas locales (otra base de historial). */
+export function setPerfil(perfil: PerfilDeportista) {
+  saveState({ perfil, daily: [], weekly: [], events: [] });
 }
 
 export function addDaily(log: DailyLog) {
@@ -58,7 +71,8 @@ export function addEvent(e: SpecialEvent) {
 }
 
 export function resetState() {
-  saveState({ daily: [], weekly: [], events: [] });
+  const { perfil } = loadState();
+  saveState({ perfil, daily: [], weekly: [], events: [] });
 }
 
 export function todayISO(): string {
@@ -71,17 +85,19 @@ export function weekStartISO(d = new Date()): string {
   return new Date(d.getTime() - diff * 86_400_000).toISOString().slice(0, 10);
 }
 
-/** Historial base (deportista demo) + entradas locales; las locales pisan por fecha. */
-export function effectiveAthleteData(): {
+/** Historial base (deportista demo del perfil elegido) + entradas locales; las locales pisan por fecha. */
+export function effectiveAthleteData(perfilArg?: PerfilDeportista): {
   dailyLogs: DailyLog[];
   weekly: WeeklyLog | null;
   events: SpecialEvent[];
+  perfil: PerfilDeportista;
 } {
-  const base = getPlayer(DEMO_ATHLETE_ID);
   const local = loadState();
+  const perfil = perfilArg ?? local.perfil;
+  const base = getDemoAthlete(perfil);
 
   const byDate = new Map<string, DailyLog>();
-  for (const l of base?.dailyLogs ?? []) byDate.set(l.date, l);
+  for (const l of base.dailyLogs) byDate.set(l.date, l);
   for (const l of local.daily) byDate.set(l.date, l);
   const dailyLogs = [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -90,7 +106,7 @@ export function effectiveAthleteData(): {
       ? [...local.weekly].sort((a, b) => b.weekStart.localeCompare(a.weekStart))[0]
       : null;
 
-  const events = [...(base?.events ?? []), ...local.events];
+  const events = [...base.events, ...local.events];
 
-  return { dailyLogs, weekly, events };
+  return { dailyLogs, weekly, events, perfil };
 }

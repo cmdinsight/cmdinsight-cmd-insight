@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PlayerInsight } from "@/components/demo/PlayerInsight";
 import { effectiveAthleteData } from "@/components/demo/store";
-import type { DailyLog, SpecialEvent, WeeklyLog } from "@/lib/score/types";
+import type { DailyLog, PerfilDeportista, SpecialEvent, WeeklyLog } from "@/lib/score/types";
 
 export default function MiScorePage() {
   const [data, setData] = useState<{
     dailyLogs: DailyLog[];
     events: SpecialEvent[];
     weekly: WeeklyLog | null;
+    perfil: PerfilDeportista;
   } | null>(null);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function MiScorePage() {
 
       <div className="mt-6">
         {data ? (
-          <PlayerInsight dailyLogs={data.dailyLogs} events={data.events} weekly={data.weekly} />
+          <PlayerInsight dailyLogs={data.dailyLogs} events={data.events} weekly={data.weekly} perfil={data.perfil} />
         ) : (
           <div className="card p-8 text-sm text-slatey">Cargando tus datos…</div>
         )}

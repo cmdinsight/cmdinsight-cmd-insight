@@ -3,15 +3,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { computeRisk, type RiskResult } from "@/lib/score/engine";
-import { effectiveAthleteData, loadState, resetState } from "@/components/demo/store";
+import type { PerfilDeportista } from "@/lib/score/types";
+import { PERFIL_OPCIONES, getPerfil } from "@/lib/score/perfiles";
+import { effectiveAthleteData, loadState, resetState, setPerfil } from "@/components/demo/store";
 import { RiskBadge } from "@/components/risk/RiskBadge";
-import { getPlayer, DEMO_ATHLETE_ID } from "@/lib/demo/data";
+import { getDemoAthlete } from "@/lib/demo/data";
 
 const FORMS = [
   {
     href: "/demo/deportista/control-diario",
     t: "Control diario",
-    d: "Después de cada entrenamiento o partido. Carga, dolor, fatiga, sueño y estrés. 2 minutos.",
+    d: "Después de cada entrenamiento o sesión. Carga, dolor, fatiga, sueño y estrés. 2 minutos.",
   },
   {
     href: "/demo/deportista/control-semanal",
@@ -26,31 +28,75 @@ const FORMS = [
 ];
 
 export default function AthleteHome() {
-  const athleteName = getPlayer(DEMO_ATHLETE_ID)?.nombre ?? "Deportista demo";
+  const [perfil, setPerfilState] = useState<PerfilDeportista | null>(null);
   const [risk, setRisk] = useState<RiskResult | null>(null);
   const [localCount, setLocalCount] = useState(0);
 
-  useEffect(() => {
-    const { dailyLogs, weekly, events } = effectiveAthleteData();
-    setRisk(computeRisk({ dailyLogs, events, weekly }));
+  const refresh = (p?: PerfilDeportista) => {
+    const { dailyLogs, weekly, events, perfil: pf } = effectiveAthleteData(p);
+    setPerfilState(pf);
+    setRisk(computeRisk({ dailyLogs, events, weekly, perfil: pf }));
     const s = loadState();
     setLocalCount(s.daily.length + s.weekly.length + s.events.length);
+  };
+
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const elegir = (p: PerfilDeportista) => {
+    setPerfil(p);
+    refresh(p);
+  };
+
+  const athlete = perfil ? getDemoAthlete(perfil) : null;
 
   return (
     <div className="mx-auto max-w-3xl">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="eyebrow">Deportista</div>
-          <h1 className="mt-1 font-display text-2xl font-extrabold text-ink">Hola, {athleteName}</h1>
+          <h1 className="mt-1 font-display text-2xl font-extrabold text-ink">
+            Hola, {athlete?.nombre ?? "…"}
+          </h1>
           <p className="mt-1 text-sm text-slatey">
-            Completá tus formularios con sinceridad. Nos ayuda a cuidar tu salud y prevenir lesiones.
+            {athlete?.contexto ?? "Completá tus formularios con sinceridad. Nos ayuda a cuidar tu salud."}
           </p>
         </div>
         {risk && (
           <div className="text-right">
             <RiskBadge score={risk.score} trend={risk.trend} />
           </div>
+        )}
+      </div>
+
+      <div className="card mt-6 p-5">
+        <div className="font-display text-sm font-bold text-ink">
+          ¿Qué tipo de deportista querés simular?
+        </div>
+        <p className="mt-1 text-xs text-slatey">
+          Cambia las preguntas de los formularios, las zonas de dolor y cómo se calcula el score.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {PERFIL_OPCIONES.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => elegir(o.value)}
+              aria-pressed={perfil === o.value}
+              className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+                perfil === o.value
+                  ? "border-navy bg-navy text-white"
+                  : "border-line bg-white text-ink hover:border-navy/40"
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+        {perfil && (
+          <p className="mt-3 text-xs text-slatey">{getPerfil(perfil).descripcion}</p>
         )}
       </div>
 

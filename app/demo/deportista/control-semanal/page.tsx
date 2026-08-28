@@ -40,8 +40,8 @@ export default function ControlSemanalPage() {
       horasSueno: h,
       entrenoConDolor,
     });
-    const { dailyLogs, weekly, events } = effectiveAthleteData();
-    setResult(computeRisk({ dailyLogs, events, weekly }));
+    const { dailyLogs, weekly, events, perfil } = effectiveAthleteData();
+    setResult(computeRisk({ dailyLogs, events, weekly, perfil }));
   };
 
   return (

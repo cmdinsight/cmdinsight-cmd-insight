@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import type { SpecialEventType } from "@/lib/score/types";
+import { useEffect, useState } from "react";
+import type { PerfilDeportista, SpecialEventType } from "@/lib/score/types";
 import { getPerfil } from "@/lib/score/perfiles";
 import { computeRisk, type RiskResult } from "@/lib/score/engine";
 import { Field, MultiChips } from "@/components/demo/fields";
-import { addEvent, effectiveAthleteData, todayISO } from "@/components/demo/store";
+import { addEvent, effectiveAthleteData, loadPerfil, todayISO } from "@/components/demo/store";
 import { FormResult } from "@/components/demo/FormResult";
 
-const EVENTOS = getPerfil("EQUIPO").eventos;
-
 export default function EventoPage() {
+  const [perfil, setPerfilState] = useState<PerfilDeportista | null>(null);
   const [tipos, setTipos] = useState<SpecialEventType[]>([]);
   const [comentario, setComentario] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RiskResult | null>(null);
 
+  useEffect(() => {
+    setPerfilState(loadPerfil());
+  }, []);
+
   if (result) return <FormResult risk={result} title="Evento especial registrado" />;
+  if (!perfil) return <div className="card p-8 text-sm text-slatey">Cargando el formulario…</div>;
+
+  const eventos = getPerfil(perfil).eventos;
 
   const submit = () => {
     if (tipos.length === 0) {
@@ -24,8 +30,8 @@ export default function EventoPage() {
       return;
     }
     addEvent({ date: todayISO(), tipos, comentario: comentario.trim() || undefined });
-    const { dailyLogs, weekly, events } = effectiveAthleteData();
-    setResult(computeRisk({ dailyLogs, events, weekly }));
+    const { dailyLogs, weekly, events, perfil: pf } = effectiveAthleteData();
+    setResult(computeRisk({ dailyLogs, events, weekly, perfil: pf }));
   };
 
   return (
@@ -38,7 +44,7 @@ export default function EventoPage() {
 
       <div className="card mt-6 p-5 sm:p-7">
         <Field label="¿Ocurrió alguno de estos eventos?" hint="Podés marcar más de uno">
-          <MultiChips options={EVENTOS} value={tipos} onChange={setTipos} />
+          <MultiChips options={eventos} value={tipos} onChange={setTipos} />
         </Field>
         <Field label="Comentario breve (opcional)">
           <textarea
