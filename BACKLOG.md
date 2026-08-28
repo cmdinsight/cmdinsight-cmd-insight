@@ -52,8 +52,12 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
 
 ## 3. Deportista individual
 
-- [ ] **Alta self-serve**: registro directo desde la landing → crea una organización tipo
-      INDIVIDUAL + usuario DEPORTISTA + su Deportista, todo en un paso. Hoy lo crea Admin CMD.
+- [x] **Alta self-serve**: `/registro` (público) → `POST /api/registro` crea en una transacción
+      org INDIVIDUAL (prueba 30 días) + usuario DEPORTISTA + Deportista con perfil elegido, y abre
+      sesión → `/app/mi`. Honeypot antispam. Links desde la landing de deportistas y `/acceder`.
+  - [ ] **Pendiente:** no hay enforcement del vencimiento del trial (`trialHasta` se guarda pero
+        nada lo checkea). El acceso queda abierto hasta que se construya el cobro con dLocal.
+  - [ ] Verificación de email (hoy la cuenta queda activa al instante).
 - [x] **Perfiles de deportista** (EQUIPO / CORREDOR / CICLISTA / TRIATLETA / FUERZA / FITNESS):
       implementados. `lib/score/perfiles.ts` centraliza la config (umbrales ACWR, días de dolor
       persistente, DOMS vs dolor articular, zonas y eventos, preguntas del formulario). El motor
