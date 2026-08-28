@@ -13,7 +13,18 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
       descuento por compromiso, si se decide). Hoy `lib/planes.ts` tiene solo el precio mensual.
 - [ ] Estados de suscripción: trial activo → vencido → pago → moroso → baja.
 - [ ] Integración de pagos con **dLocal** — pagos por la web, sobre todo el plan individual.
-      Checkout, webhooks de confirmación, reintentos.
+      Checkout, webhooks de confirmación, reintentos. dLocal Go **sí** tiene API de suscripciones /
+      pagos recurrentes (`create_subscription_plan`, `create_recurring_payment`, webhooks de
+      ejecución, cancelación). Cliente de referencia: github.com/MetaLabs-inc/dlocal_go.
+  - Claves de dLocal → **variables de entorno en Vercel** (`DLOCAL_API_KEY`, `DLOCAL_SECRET_KEY`,
+    `DLOCAL_WEBHOOK_SECRET`), nunca en el repo ni en conversación. Construir y probar en sandbox
+    primero; pasar a producción cuando dLocal valide el merchant.
+  - Necesito de Manuel: doc de la API de dLocal Go (auth/firma, campos de subscription plan,
+    formato de webhooks) + confirmar que "Pagos recurrentes" está habilitado en la cuenta.
+  - Alcance: modelos `Suscripcion` y `Pago`; alta self-serve del plan individual (registro → crea
+    org INDIVIDUAL + usuario → checkout); `/api/dlocal/webhook`; estados trial→activa→fallido→
+    suspendida→cancelada; "Mi suscripción" en el panel del deportista; panel de cobros Admin CMD;
+    cron de vencimientos. **Club/gimnasio:** después y opcional (link de pago, no recurrente obligatorio).
   - Cuenta dLocal Go: **González Guerrero Manuel Alejandro y Arredondo Diez Camila - Sociedad de
     Hecho**, RUT **220266830010**, Uruguay. Teléfono público del negocio: **+598 96 276 998**
     (el registrado en dLocal Go es +598 98 052210 — conviene unificarlo).
@@ -43,11 +54,11 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
 
 - [ ] **Alta self-serve**: registro directo desde la landing → crea una organización tipo
       INDIVIDUAL + usuario DEPORTISTA + su Deportista, todo en un paso. Hoy lo crea Admin CMD.
-- [ ] **Variantes de perfil** dentro de INDIVIDUAL: fitness, runner, ciclista, triatleta, etc.
-      Cada variante puede ajustar:
-  - qué formularios / preguntas aplican,
-  - los umbrales del score (la carga y el dolor no pesan igual en un runner que en fitness),
-  - el copy y las recomendaciones.
+- [ ] **Perfiles de deportista** (EQUIPO / CORREDOR / CICLISTA / TRIATLETA / FUERZA / FITNESS):
+      personalizan el formulario, el algoritmo (métrica de carga, umbral de ACWR, manejo del DOMS
+      vs dolor articular, zonas de dolor) y el dashboard. Propuesta completa + bibliografía en
+      **`docs/perfiles-de-deportista.md`**. Arrancar por CORREDOR y FUERZA. Validar el mapa de
+      parámetros con un fisio antes de tocar el motor.
 - [x] "Plan Premium Individual" eliminado (web, prompt maestro, landing de referencia). Queda
       **un solo Plan Individual $160/mes** — CMD Insight no presta asistencia médica al individuo,
       es autocontrol. **Pendiente:** actualizar `CMD_Insight_Presentacion.pdf` (no se puede editar
