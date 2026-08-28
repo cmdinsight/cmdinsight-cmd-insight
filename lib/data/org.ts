@@ -94,7 +94,15 @@ export async function crearUsuario(creador: SessionPayload, orgId: string, i: Us
 
   const passwordHash = await bcrypt.hash(password, 10);
   const usuario = await prisma.usuario.create({
-    data: { nombre, email, passwordHash, rol: i.rol, organizacionId: orgId },
+    // Alta hecha por un administrador → email ya considerado verificado.
+    data: {
+      nombre,
+      email,
+      passwordHash,
+      rol: i.rol,
+      organizacionId: orgId,
+      emailVerificadoEn: new Date(),
+    },
   });
 
   if (i.rol === "DEPORTISTA" && i.deportistaId) {

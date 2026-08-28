@@ -83,17 +83,19 @@ model Organizacion {
 }
 
 model Usuario {
-  id             String        @id @default(cuid())
-  email          String        @unique
-  nombre         String
-  passwordHash   String
-  rol            Rol           @default(DEPORTISTA)
-  activo         Boolean       @default(true)
-  organizacionId String?
-  organizacion   Organizacion? @relation(fields: [organizacionId], references: [id], onDelete: SetNull)
-  deportista     Deportista?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                String        @id @default(cuid())
+  email             String        @unique
+  nombre            String
+  passwordHash      String
+  rol               Rol           @default(DEPORTISTA)
+  activo            Boolean       @default(true)
+  emailVerificadoEn DateTime?
+  verifToken        String?       @unique
+  organizacionId    String?
+  organizacion      Organizacion? @relation(fields: [organizacionId], references: [id], onDelete: SetNull)
+  deportista        Deportista?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 }
 
 // Categoría / grupo / nivel dentro de una organización

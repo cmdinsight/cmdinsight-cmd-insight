@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { signSession, COOKIE_NAME } from "@/lib/session";
 import { json, handler, ApiError } from "@/lib/api";
 import { crearCuentaIndividual } from "@/lib/data/registro";
+import { enviarVerificacionEmail } from "@/lib/data/verificacion";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,13 @@ export const POST = handler(async (req: NextRequest) => {
   }
 
   const usuario = await crearCuentaIndividual(body);
+
+  // Email de verificación (no bloquea el alta si el proveedor no está configurado).
+  try {
+    await enviarVerificacionEmail(usuario, req.nextUrl.origin);
+  } catch (e) {
+    console.error("[registro] no se pudo enviar la verificación:", e);
+  }
 
   const token = await signSession({
     sub: usuario.id,

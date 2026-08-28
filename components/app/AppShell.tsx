@@ -1,9 +1,11 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import type { SessionPayload } from "@/lib/session";
+import type { TrialInfo } from "@/lib/trial";
 import { ROL_LABEL, type Rol } from "@/lib/roles";
 import { AppNav, type NavItem } from "./AppNav";
 import { LogoutButton } from "./LogoutButton";
+import { AvisosBar } from "./AvisosBar";
 
 function navFor(rol: Rol, athleteIndividual: boolean): NavItem[] {
   switch (rol) {
@@ -36,10 +38,14 @@ function navFor(rol: Rol, athleteIndividual: boolean): NavItem[] {
 export function AppShell({
   session,
   athleteIndividual = false,
+  trial,
+  emailVerificado = true,
   children,
 }: {
   session: SessionPayload;
   athleteIndividual?: boolean;
+  trial?: TrialInfo;
+  emailVerificado?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -60,6 +66,9 @@ export function AppShell({
           </div>
         </div>
       </header>
+      {trial && (
+        <AvisosBar trial={trial} emailVerificado={emailVerificado} />
+      )}
       <main className="wrap py-8">{children}</main>
     </div>
   );

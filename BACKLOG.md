@@ -55,9 +55,19 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
 - [x] **Alta self-serve**: `/registro` (público) → `POST /api/registro` crea en una transacción
       org INDIVIDUAL (prueba 30 días) + usuario DEPORTISTA + Deportista con perfil elegido, y abre
       sesión → `/app/mi`. Honeypot antispam. Links desde la landing de deportistas y `/acceder`.
-  - [ ] **Pendiente:** no hay enforcement del vencimiento del trial (`trialHasta` se guarda pero
-        nada lo checkea). El acceso queda abierto hasta que se construya el cobro con dLocal.
-  - [ ] Verificación de email (hoy la cuenta queda activa al instante).
+- [x] **Vencimiento del trial**: `lib/trial.ts` (`trialInfo`). El `AppShell` muestra un aviso
+      cuando faltan ≤ 5 días o ya venció (todos los roles con org). El deportista individual con
+      prueba vencida ve la pantalla `TrialVencido` (recuperable: el admin extiende `trialHasta` o
+      asigna un plan). Clubes/gimnasios solo ven el aviso, no se bloquean.
+  - [ ] **Pendiente:** cuando exista cobro con dLocal, la pantalla de vencido debe llevar al pago
+        en vez de "escribinos".
+- [x] **Verificación de email** (alta self-serve): `Usuario.emailVerificadoEn` / `verifToken`.
+      Al registrarse se manda el mail (`lib/email.ts`, API REST de Resend por `fetch`, sin
+      dependencia). `/verificar-email?token=` confirma; aviso + botón "reenviar" en el `AppShell`.
+      **No bloquea** el uso. Las cuentas creadas por un admin quedan verificadas automáticamente.
+  - [ ] **Bloqueado por infra:** para que el mail realmente salga hacen falta `RESEND_API_KEY` y
+        `EMAIL_FROM` en Vercel + un dominio de envío verificado en Resend (idealmente de cmdtech.uy).
+        Sin eso, `enviarEmail` no envía y deja el intento en los logs del servidor.
 - [x] **Perfiles de deportista** (EQUIPO / CORREDOR / CICLISTA / TRIATLETA / FUERZA / FITNESS):
       implementados. `lib/score/perfiles.ts` centraliza la config (umbrales ACWR, días de dolor
       persistente, DOMS vs dolor articular, zonas y eventos, preguntas del formulario). El motor
