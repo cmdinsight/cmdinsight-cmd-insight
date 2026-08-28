@@ -31,9 +31,14 @@ export default function DeportistasPage() {
             Corredores, ciclistas, triatletas, jugadores amateur y cualquier persona que entrena
             regularmente. Llevá tu propio control de carga y riesgo en 2 minutos por día.
           </p>
-          <Link href="/demo/deportista" className="btn btn-primary btn-lg mt-8">
-            Probar los formularios
-          </Link>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/registro" className="btn btn-primary btn-lg">
+              Crear mi cuenta
+            </Link>
+            <Link href="/demo/deportista" className="btn btn-ghost btn-lg">
+              Probar los formularios primero
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -65,9 +70,9 @@ export default function DeportistasPage() {
                 <Check>Historial deportivo e informes descargables</Check>
                 <Check>Acceso web desde cualquier dispositivo</Check>
               </ul>
-              <a href="https://wa.me/59896276998" className="btn btn-accent mt-7 w-full">
+              <Link href="/registro" className="btn btn-accent mt-7 w-full">
                 Empezar la prueba de 30 días
-              </a>
+              </Link>
               <p className="mt-3 text-xs text-slatey">
                 Es una herramienta de autocontrol, no reemplaza la consulta con un profesional de la salud.
               </p>

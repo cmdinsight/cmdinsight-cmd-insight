@@ -8,6 +8,7 @@ function isProtected(pathname: string): boolean {
   if (pathname.startsWith("/api")) {
     if (pathname.startsWith("/api/auth/login")) return false;
     if (pathname.startsWith("/api/setup")) return false;
+    if (pathname.startsWith("/api/registro")) return false;
     if (pathname.startsWith("/api/contacto")) return false;
     return true;
   }

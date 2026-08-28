@@ -26,6 +26,11 @@ export default async function AccederPage() {
       subtitle="Ingresá con la cuenta de tu club, gimnasio o perfil individual."
       footer={
         <>
+          ¿No tenés cuenta?{" "}
+          <Link href="/registro" className="font-semibold text-navy underline">
+            Creá tu perfil individual
+          </Link>
+          <br />
           ¿Solo querés ver cómo funciona?{" "}
           <Link href="/demo" className="font-semibold text-navy underline">
             Ver la demo
