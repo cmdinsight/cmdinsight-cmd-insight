@@ -56,8 +56,18 @@ export function recomendaciones(
     });
   }
 
+  // Calibración: todavía no hay carga crónica confiable
+  if (risk.calibracion.activa) {
+    items.push({
+      prioridad: "baja",
+      categoria: "carga",
+      titulo: "Score en calibración",
+      detalle: `El deportista lleva ${risk.calibracion.diasRegistrados} de ${risk.calibracion.total} días de registro. Hasta completar ~2 semanas, la parte de carga aguda vs crónica del score no se calcula (el ratio se dispara solo al arrancar). El resto del score —dolor, fatiga, sueño y eventos— sí es válido desde el primer día.`,
+    });
+  }
+
   // ACWR — carga aguda:crónica
-  if (risk.acwr.ratio !== null && risk.acwr.ratio > perfilCfg.acwr.p1) {
+  if (!risk.calibracion.activa && risk.acwr.ratio !== null && risk.acwr.ratio > perfilCfg.acwr.p1) {
     const alto = risk.acwr.ratio > perfilCfg.acwr.p2;
     const pct = Math.round((risk.acwr.ratio - 1) * 100);
     items.push({
@@ -68,7 +78,7 @@ export function recomendaciones(
         2,
       )}, zona óptima ${perfilCfg.acwr.optimo[0]}–${perfilCfg.acwr.optimo[1]}). ${carga.como}`,
     });
-  } else if (risk.acwr.ratio !== null && risk.acwr.ratio < perfilCfg.acwr.optimo[0]) {
+  } else if (!risk.calibracion.activa && risk.acwr.ratio !== null && risk.acwr.ratio < perfilCfg.acwr.optimo[0]) {
     items.push({
       prioridad: "baja",
       categoria: "carga",

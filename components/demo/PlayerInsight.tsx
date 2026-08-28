@@ -8,6 +8,8 @@ import { analyzeTrend } from "@/lib/score/trend";
 import type { DailyLog, PerfilDeportista, SpecialEvent, WeeklyLog } from "@/lib/score/types";
 import { getPerfil } from "@/lib/score/perfiles";
 import { SemaphorePanel } from "@/components/risk/Semaphore";
+import { CalibracionAviso } from "@/components/risk/CalibracionAviso";
+import { GuiaSimplePanel } from "@/components/risk/GuiaSimplePanel";
 import { LoadBars, Sparkline } from "@/components/charts/Charts";
 import { RecomendacionesPanel } from "@/components/roster/RecomendacionesPanel";
 
@@ -34,6 +36,7 @@ export function PlayerInsight({
   perfil = "EQUIPO",
   medico = false,
   conducta = false,
+  tono = "tecnico",
 }: {
   dailyLogs: DailyLog[];
   events: SpecialEvent[];
@@ -42,10 +45,13 @@ export function PlayerInsight({
   medico?: boolean;
   /** Mostrar el panel de conducta preventiva sugerida (cuerpo técnico / médico / individual). */
   conducta?: boolean;
+  /** "simple": lenguaje sin jerga para el deportista individual. */
+  tono?: "tecnico" | "simple";
 }) {
   const risk: RiskResult = computeRisk({ dailyLogs, events, weekly, perfil });
   const trend = analyzeTrend(dailyLogs, events, risk.asOf, perfil);
   const perfilCfg = getPerfil(perfil);
+  const simple = tono === "simple";
 
   const last28 = dailyLogs
     .filter((l) => {
@@ -60,11 +66,19 @@ export function PlayerInsight({
 
   return (
     <div className="space-y-6">
-      {conducta && <RecomendacionesPanel risk={risk} trend={trend} />}
+      {risk.calibracion.activa && (
+        <CalibracionAviso calibracion={risk.calibracion} tono={tono} />
+      )}
+      {conducta && (simple ? <GuiaSimplePanel risk={risk} /> : <RecomendacionesPanel risk={risk} trend={trend} />)}
 
       <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
         <div className="space-y-6">
-        <SemaphorePanel score={risk.score} breakdown={risk.breakdown} />
+        <SemaphorePanel
+          score={risk.score}
+          breakdown={risk.breakdown}
+          tono={tono}
+          calibrando={risk.calibracion.activa}
+        />
 
         <div className="card p-5">
           <div className="flex items-center justify-between">
@@ -101,7 +115,9 @@ export function PlayerInsight({
             <span className="chip">{perfilCfg.label}</span>
           </div>
           <p className="text-xs text-slatey">
-            Barras = RPE × minutos. Línea llena = promedio 7 días · línea punteada = promedio 28 días.
+            {simple
+              ? "Cada barra es un día (esfuerzo × minutos). La línea llena es tu promedio de la última semana; la punteada, el de las últimas 4."
+              : "Barras = RPE × minutos. Línea llena = promedio 7 días · línea punteada = promedio 28 días."}
           </p>
           <div className="mt-3">
             <LoadBars
@@ -110,15 +126,21 @@ export function PlayerInsight({
               chronic={risk.acwr.chronic}
             />
           </div>
+          {risk.calibracion.activa && (
+            <p className="mt-2 text-xs font-medium text-navy">
+              El ACWR todavía no cuenta para el score: faltan {risk.calibracion.diasFaltantes}{" "}
+              {risk.calibracion.diasFaltantes === 1 ? "día" : "días"} de registro para calibrarlo.
+            </p>
+          )}
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slatey">
-            <span>Aguda: <b className="text-ink">{Math.round(risk.acwr.acute)}</b></span>
-            <span>Crónica: <b className="text-ink">{Math.round(risk.acwr.chronic)}</b></span>
+            <span>{simple ? "Última semana" : "Aguda"}: <b className="text-ink">{Math.round(risk.acwr.acute)}</b></span>
+            <span>{simple ? "Habitual (4 sem.)" : "Crónica"}: <b className="text-ink">{Math.round(risk.acwr.chronic)}</b></span>
             <span>
               ACWR:{" "}
-              <b className={risk.acwr.inOptimalZone ? "text-ink" : "risk-high"}>
-                {risk.acwr.ratio ? risk.acwr.ratio.toFixed(2) : "—"}
+              <b className={risk.acwr.calibrando ? "text-slatey" : risk.acwr.inOptimalZone ? "text-ink" : "risk-high"}>
+                {risk.acwr.calibrando ? "en calibración" : risk.acwr.ratio ? risk.acwr.ratio.toFixed(2) : "—"}
               </b>{" "}
-              (óptimo {perfilCfg.acwr.optimo[0]}–{perfilCfg.acwr.optimo[1]})
+              {!risk.acwr.calibrando && <>(óptimo {perfilCfg.acwr.optimo[0]}–{perfilCfg.acwr.optimo[1]})</>}
             </span>
             {mostrarKm && (
               <span>
@@ -140,7 +162,7 @@ export function PlayerInsight({
 
         <div className="card p-5">
           <div className="font-display text-sm font-bold text-ink">
-            Análisis de tendencia · {trend.daysAnalyzed} días
+            {simple ? "Cómo venís" : "Análisis de tendencia"} · {trend.daysAnalyzed} días
           </div>
           <p className="mt-2 text-sm text-slatey">{trend.narrative}</p>
           {trend.factors.length > 0 && (

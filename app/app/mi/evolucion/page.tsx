@@ -28,7 +28,7 @@ export default async function MiEvolucionPage() {
         profesional.
       </p>
       <div className="mt-6">
-        <PlayerInsight dailyLogs={d.dailyLogs} events={d.events} weekly={d.weekly} perfil={d.perfil} conducta />
+        <PlayerInsight dailyLogs={d.dailyLogs} events={d.events} weekly={d.weekly} perfil={d.perfil} tono="simple" conducta />
       </div>
     </div>
   );

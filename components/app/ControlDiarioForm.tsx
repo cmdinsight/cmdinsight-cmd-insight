@@ -26,7 +26,7 @@ export function ControlDiarioForm({ perfil }: { perfil: PerfilDeportista }) {
 
   if (result) {
     return result.mostrarRiesgo && result.risk ? (
-      <FormResult risk={result.risk} title="Control diario cargado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" />
+      <FormResult risk={result.risk} title="Control diario cargado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" tono="simple" />
     ) : (
       <FormConfirmacion titulo="Control diario cargado" />
     );

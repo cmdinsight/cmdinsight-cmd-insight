@@ -22,7 +22,7 @@ const SUBSCORES = [
       ["1.21 – 1.3", "1 pt"],
       ["> 1.3", "2 pts"],
     ],
-    note: "Zona óptima de referencia: 0.8 – 1.3.",
+    note: "Zona óptima de referencia: 0.8 – 1.3. Período de calibración: los primeros ~14 días de registro este sub-score queda en 0, porque la carga crónica todavía se está construyendo y el ratio se dispararía solo. Los otros tres factores cuentan desde el día 1.",
   },
   {
     t: "IFS · Índice de fatiga subjetiva",

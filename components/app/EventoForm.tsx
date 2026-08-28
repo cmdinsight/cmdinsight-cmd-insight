@@ -17,7 +17,7 @@ export function EventoForm({ perfil }: { perfil: PerfilDeportista }) {
 
   if (result) {
     return result.mostrarRiesgo && result.risk ? (
-      <FormResult risk={result.risk} title="Evento especial registrado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" />
+      <FormResult risk={result.risk} title="Evento especial registrado" backHref="/app/mi" evolucionHref="/app/mi/evolucion" tono="simple" />
     ) : (
       <FormConfirmacion titulo="Evento especial registrado" />
     );

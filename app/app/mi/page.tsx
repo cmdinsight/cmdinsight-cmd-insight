@@ -60,7 +60,11 @@ export default async function MiPage() {
               {d.risk.score}
               <span className="text-lg text-slatey">/7</span> · {d.risk.semaphore.label}
             </div>
-            <div className="mt-1 text-sm text-slatey">{d.risk.semaphore.accion}</div>
+            <div className="mt-1 text-sm text-slatey">
+              {d.risk.calibracion.activa
+                ? `Score en calibración: día ${d.risk.calibracion.diasRegistrados} de ${d.risk.calibracion.total}. Seguí cargando tus controles.`
+                : d.risk.semaphore.accion}
+            </div>
           </div>
           <span className="text-navy">Ver detalle →</span>
         </Link>

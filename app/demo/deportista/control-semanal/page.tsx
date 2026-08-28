@@ -15,7 +15,7 @@ export default function ControlSemanalPage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RiskResult | null>(null);
 
-  if (result) return <FormResult risk={result} title="Seguimiento semanal cargado" />;
+  if (result) return <FormResult risk={result} title="Seguimiento semanal cargado" tono="simple" />;
 
   const submit = () => {
     const h = Number(horas);

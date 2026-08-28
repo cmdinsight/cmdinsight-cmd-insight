@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { SemaphorePanel } from "@/components/risk/Semaphore";
+import { CalibracionAviso } from "@/components/risk/CalibracionAviso";
 import type { RiskResult } from "@/lib/score/engine";
 
 export function FormResult({
@@ -9,12 +10,15 @@ export function FormResult({
   title,
   backHref = "/demo/deportista",
   evolucionHref = "/demo/deportista/mi-score",
+  tono = "tecnico",
 }: {
-  risk: Pick<RiskResult, "score" | "breakdown" | "alerts">;
+  risk: Pick<RiskResult, "score" | "breakdown" | "alerts"> & Partial<Pick<RiskResult, "calibracion">>;
   title: string;
   backHref?: string;
   evolucionHref?: string;
+  tono?: "tecnico" | "simple";
 }) {
+  const calibrando = !!risk.calibracion?.activa;
   return (
     <div className="mx-auto max-w-2xl">
       <div className="eyebrow">Listo</div>
@@ -23,8 +27,14 @@ export function FormResult({
         Guardado. Así queda tu score de riesgo con esta información:
       </p>
 
+      {risk.calibracion?.activa && (
+        <div className="mt-6">
+          <CalibracionAviso calibracion={risk.calibracion} tono={tono} />
+        </div>
+      )}
+
       <div className="mt-6">
-        <SemaphorePanel score={risk.score} breakdown={risk.breakdown} />
+        <SemaphorePanel score={risk.score} breakdown={risk.breakdown} tono={tono} calibrando={calibrando} />
       </div>
 
       {risk.alerts.length > 0 && (

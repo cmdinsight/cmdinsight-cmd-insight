@@ -27,7 +27,7 @@ export default function ControlDiarioPage() {
     setPerfilState(loadPerfil());
   }, []);
 
-  if (result) return <FormResult risk={result} title="Control diario cargado" />;
+  if (result) return <FormResult risk={result} title="Control diario cargado" tono="simple" />;
   if (!perfil) return <div className="card p-8 text-sm text-slatey">Cargando el formulario…</div>;
 
   const cfg = getPerfil(perfil);

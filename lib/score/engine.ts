@@ -21,6 +21,14 @@ import { getPerfil } from "./perfiles";
 
 const MS_DAY = 86_400_000;
 
+/**
+ * Días distintos de registro que hacen falta para que la parte de "carga
+ * aguda vs crónica" (ACWR) del score sea confiable. Antes de eso la carga
+ * crónica está a medio construir y el ratio se dispara solo, así que ese
+ * sub-score se mantiene en 0 y el sistema se muestra "en calibración".
+ */
+export const DIAS_CALIBRACION = 14;
+
 function toDay(iso: string): number {
   return Math.floor(Date.parse(iso + "T00:00:00Z") / MS_DAY);
 }
@@ -60,6 +68,10 @@ export interface AcwrResult {
   points: number;
   /** Zona óptima de referencia 0.8–1.3. */
   inOptimalZone: boolean;
+  /** Días distintos con control diario dentro de la ventana de 28 días. */
+  diasRegistrados: number;
+  /** true mientras no haya suficiente historial para una carga crónica confiable. */
+  calibrando: boolean;
 }
 
 export function computeAcwr(
@@ -72,19 +84,23 @@ export function computeAcwr(
     const d = daysAgo(l.date, asOf);
     return d >= 0 && d < n;
   };
+  const win28 = logs.filter((l) => inWindow(l, 28));
   const acute = sum(logs.filter((l) => inWindow(l, 7)).map(dailyLoad)) / 7;
-  const chronic = sum(logs.filter((l) => inWindow(l, 28)).map(dailyLoad)) / 28;
+  const chronic = sum(win28.map(dailyLoad)) / 28;
   const ratio = chronic > 0 ? acute / chronic : null;
 
+  const diasRegistrados = new Set(win28.map((l) => l.date)).size;
+  const calibrando = diasRegistrados < DIAS_CALIBRACION;
+
   let points = 0;
-  if (ratio !== null) {
+  if (ratio !== null && !calibrando) {
     if (ratio <= cfg.p1) points = 0;
     else if (ratio <= cfg.p2) points = 1;
     else points = 2;
   }
   const inOptimalZone =
-    ratio !== null && ratio >= cfg.optimo[0] && ratio <= cfg.optimo[1];
-  return { acute, chronic, ratio, points, inOptimalZone };
+    !calibrando && ratio !== null && ratio >= cfg.optimo[0] && ratio <= cfg.optimo[1];
+  return { acute, chronic, ratio, points, inOptimalZone, diasRegistrados, calibrando };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -258,10 +274,19 @@ export interface RiskBreakdownItem {
 
 export type Trend = "up" | "down" | "flat";
 
+export interface CalibracionInfo {
+  /** true mientras el sub-score de carga (ACWR) todavía no cuenta. */
+  activa: boolean;
+  diasRegistrados: number;
+  diasFaltantes: number;
+  total: number;
+}
+
 export interface RiskResult {
   asOf: string;
   perfil: PerfilDeportista;
   score: number;
+  calibracion: CalibracionInfo;
   acwr: AcwrResult;
   ifs: IfsResult;
   pain: PainResult;
@@ -327,14 +352,24 @@ export function computeRisk(input: RiskInput): RiskResult {
   const score = clamp(acwr.points + ifs.points + pain.points + event.points, 0, 7);
   const sem = semaphore(score);
 
+  const calibracion: CalibracionInfo = {
+    activa: acwr.calibrando,
+    diasRegistrados: acwr.diasRegistrados,
+    diasFaltantes: Math.max(0, DIAS_CALIBRACION - acwr.diasRegistrados),
+    total: DIAS_CALIBRACION,
+  };
+
   const breakdown: RiskBreakdownItem[] = [
     {
       key: "acwr",
       label: "Carga aguda : crónica (ACWR)",
       points: acwr.points,
       max: 2,
-      detail:
-        acwr.ratio === null
+      detail: acwr.calibrando
+        ? `En calibración: llevás ${acwr.diasRegistrados} de ${DIAS_CALIBRACION} días de registro. ` +
+          "Hasta tener unas dos semanas de datos no se puede comparar tu carga reciente con tu carga habitual, " +
+          "así que esta parte del score todavía no suma puntos."
+        : acwr.ratio === null
           ? "Sin historial crónico suficiente todavía."
           : `Ratio ${acwr.ratio.toFixed(2)} · aguda ${Math.round(acwr.acute)} vs crónica ${Math.round(
               acwr.chronic,
@@ -382,7 +417,7 @@ export function computeRisk(input: RiskInput): RiskResult {
     {
       key: "acwr",
       label: `ACWR elevado (> ${perfilCfg.acwr.p2})`,
-      met: acwr.ratio !== null && acwr.ratio > perfilCfg.acwr.p2,
+      met: !acwr.calibrando && acwr.ratio !== null && acwr.ratio > perfilCfg.acwr.p2,
     },
     { key: "pain", label: "Dolor persistente", met: pain.points === 2 },
     {
@@ -412,7 +447,7 @@ export function computeRisk(input: RiskInput): RiskResult {
       severity: "mod",
     });
   }
-  if (acwr.ratio !== null && acwr.ratio > perfilCfg.acwr.p2) {
+  if (!acwr.calibrando && acwr.ratio !== null && acwr.ratio > perfilCfg.acwr.p2) {
     alerts.push({ key: "pico_carga", label: "Aumento brusco de carga", severity: "mod" });
   }
 
@@ -429,6 +464,7 @@ export function computeRisk(input: RiskInput): RiskResult {
     asOf,
     perfil,
     score,
+    calibracion,
     acwr,
     ifs,
     pain,

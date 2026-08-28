@@ -37,7 +37,7 @@ export default function MiScorePage() {
 
       <div className="mt-6">
         {data ? (
-          <PlayerInsight dailyLogs={data.dailyLogs} events={data.events} weekly={data.weekly} perfil={data.perfil} />
+          <PlayerInsight dailyLogs={data.dailyLogs} events={data.events} weekly={data.weekly} perfil={data.perfil} tono="simple" conducta />
         ) : (
           <div className="card p-8 text-sm text-slatey">Cargando tus datos…</div>
         )}

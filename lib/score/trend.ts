@@ -109,8 +109,13 @@ export function analyzeTrend(
   }
 
   // acwr_out_of_range — fuera del rango seguro del perfil
+  // (no se evalúa mientras la carga crónica está en calibración: el ratio se dispara solo)
   const acwr = computeAcwr(sorted, cut, perfil);
-  if (acwr.ratio !== null && (acwr.ratio < rangoSeguro[0] || acwr.ratio > rangoSeguro[1])) {
+  if (
+    !acwr.calibrando &&
+    acwr.ratio !== null &&
+    (acwr.ratio < rangoSeguro[0] || acwr.ratio > rangoSeguro[1])
+  ) {
     factors.push({
       key: "acwr_out_of_range",
       label: "ACWR fuera de rango",
