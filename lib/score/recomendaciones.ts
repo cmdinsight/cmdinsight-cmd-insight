@@ -3,8 +3,20 @@
 
 import type { RiskResult } from "./engine";
 import type { TrendAnalysis } from "./trend";
+import type { PerfilDeportista } from "./types";
+import { getPerfil } from "./perfiles";
 
 export type Prioridad = "alta" | "media" | "baja";
+
+// Cómo se nombra "bajar la carga" según la disciplina.
+const ACCION_CARGA: Record<PerfilDeportista, { que: string; como: string }> = {
+  EQUIPO: { que: "la carga", como: "Evitar sesiones de alta intensidad en días consecutivos y espaciar los picos." },
+  CORREDOR: { que: "el kilometraje", como: "Bajar volumen, evitar cuestas y asfalto duro, sumar días de trote suave o descanso." },
+  CICLISTA: { que: "el volumen (horas / desnivel)", como: "Salidas más cortas y llanas, sin bloques de alta intensidad seguidos." },
+  TRIATLETA: { que: "el volumen total", como: "Recortar sobre todo la carga de corrida, que es la de mayor impacto." },
+  FUERZA: { que: "el tonelaje / volumen", como: "Sacar el trabajo al fallo, bajar series o carga, priorizar técnica y rango completo." },
+  FITNESS: { que: "el volumen de entrenamiento", como: "Menos sesiones o más suaves esta semana, sin buscar el agotamiento." },
+};
 
 export interface Recomendacion {
   prioridad: Prioridad;
@@ -22,6 +34,8 @@ export function recomendaciones(
   const items: Recomendacion[] = [];
   const nivel = risk.semaphore.level;
   const latest = risk.latestLog;
+  const perfilCfg = getPerfil(risk.perfil);
+  const carga = ACCION_CARGA[perfilCfg.key];
 
   // Encabezado según nivel
   if (nivel === "alto") {
@@ -43,18 +57,18 @@ export function recomendaciones(
   }
 
   // ACWR — carga aguda:crónica
-  if (risk.acwr.ratio !== null && risk.acwr.ratio > 1.3) {
-    const alto = risk.acwr.ratio > 1.5;
+  if (risk.acwr.ratio !== null && risk.acwr.ratio > perfilCfg.acwr.p1) {
+    const alto = risk.acwr.ratio > perfilCfg.acwr.p2;
     const pct = Math.round((risk.acwr.ratio - 1) * 100);
     items.push({
       prioridad: alto ? "alta" : "media",
       categoria: "carga",
-      titulo: `Reducir la carga ${alto ? "30–40%" : "20–30%"} esta semana`,
+      titulo: `Reducir ${carga.que} ${alto ? "30–40%" : "20–30%"} esta semana`,
       detalle: `La carga aguda está ${pct}% por encima de la crónica (ACWR ${risk.acwr.ratio.toFixed(
         2,
-      )}, zona óptima 0.8–1.3). Evitar sesiones de alta intensidad en días consecutivos y espaciar los picos.`,
+      )}, zona óptima ${perfilCfg.acwr.optimo[0]}–${perfilCfg.acwr.optimo[1]}). ${carga.como}`,
     });
-  } else if (risk.acwr.ratio !== null && risk.acwr.ratio < 0.8) {
+  } else if (risk.acwr.ratio !== null && risk.acwr.ratio < perfilCfg.acwr.optimo[0]) {
     items.push({
       prioridad: "baja",
       categoria: "carga",
@@ -71,7 +85,9 @@ export function recomendaciones(
       prioridad: "alta",
       categoria: "dolor",
       titulo: `Evaluación médica / kinesiológica de ${risk.pain.persistentZone ?? "la zona afectada"}`,
-      detalle: `Dolor ≥ 5/10 sostenido ${risk.pain.persistentDays} días en la misma zona: patrón asociado a lesión muscular. No entrenar esa zona a intensidad; si no cede en 5–7 días, considerar estudio por imágenes.`,
+      detalle: perfilCfg.dolor.distingueTipo
+        ? `Dolor articular ≥ 5/10 sostenido ${risk.pain.persistentDays} días en la misma zona (no es el dolor muscular esperable post-entreno). Descargar esa articulación, revisar técnica y consultar si no cede en 5–7 días.`
+        : `Dolor ≥ 5/10 sostenido ${risk.pain.persistentDays} días en la misma zona: patrón asociado a lesión por sobrecarga. No entrenar esa zona a intensidad; si no cede en 5–7 días, considerar estudio por imágenes.`,
     });
   } else if (risk.pain.points === 1) {
     items.push({

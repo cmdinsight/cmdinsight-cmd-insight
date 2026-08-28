@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { PAIN_ZONES, type PainZone } from "@/lib/score/types";
+import type { PainZone } from "@/lib/score/types";
+import { getPerfil } from "@/lib/score/perfiles";
 import { computeRisk, type RiskResult } from "@/lib/score/engine";
 import { Field, ChipScale, SleepScale } from "@/components/demo/fields";
 import { addDaily, effectiveAthleteData, todayISO } from "@/components/demo/store";
 import { FormResult } from "@/components/demo/FormResult";
+
+const ZONAS = getPerfil("EQUIPO").zonas;
 
 export default function ControlDiarioPage() {
   const [rpe, setRpe] = useState<number | null>(null);
@@ -83,7 +86,7 @@ export default function ControlDiarioPage() {
 
         <Field n={4} label="¿Dónde sentís mayor molestia?">
           <select className="input max-w-xs" value={zona} onChange={(e) => setZona(e.target.value as PainZone)}>
-            {PAIN_ZONES.map((z) => (
+            {ZONAS.map((z) => (
               <option key={z} value={z}>
                 {z}
               </option>

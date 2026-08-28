@@ -43,6 +43,7 @@ export default async function PlantelPlayerPage({ params }: { params: { id: stri
           dailyLogs={d.dailyLogs}
           events={d.events}
           weekly={d.weekly}
+          perfil={d.perfil}
           medico={esMedico}
           conducta
         />
@@ -51,7 +52,7 @@ export default async function PlantelPlayerPage({ params }: { params: { id: stri
       {esMedico && (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <FichaMedicaPanel deportistaId={d.id} ficha={d.fichaMedica} />
-          <RegistrarEvento deportistaId={d.id} />
+          <RegistrarEvento deportistaId={d.id} perfil={d.perfil} />
         </div>
       )}
     </div>

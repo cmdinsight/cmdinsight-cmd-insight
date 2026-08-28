@@ -1,7 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { computeRisk, type RiskResult } from "@/lib/score/engine";
 import { analyzeTrend, type TrendAnalysis } from "@/lib/score/trend";
-import type { DailyLog, SpecialEvent, WeeklyLog, SpecialEventType } from "@/lib/score/types";
+import type {
+  DailyLog,
+  PerfilDeportista,
+  SpecialEvent,
+  WeeklyLog,
+  SpecialEventType,
+  TipoDolor,
+} from "@/lib/score/types";
 import { zonaToLabel } from "./zonas";
 import type {
   ControlDiario,
@@ -23,6 +30,9 @@ export function mapControl(c: ControlDiario): DailyLog {
     fatiga: c.fatiga,
     sueno: c.sueno,
     estres: c.estres,
+    km: c.km ?? undefined,
+    tipoDolor: c.tipoDolor ? (c.tipoDolor.toLowerCase() as TipoDolor) : undefined,
+    entrenoAlFallo: c.entrenoAlFallo ?? undefined,
   };
 }
 
@@ -51,6 +61,7 @@ export interface DeportistaConRiesgo {
   posicion: string | null;
   dorsal: number | null;
   grupo: string | null;
+  perfil: PerfilDeportista;
   dailyLogs: DailyLog[];
   events: SpecialEvent[];
   risk: RiskResult;
@@ -81,16 +92,18 @@ export async function listRosterWithRisk(
     const dailyLogs = d.controles.map(mapControl);
     const events = d.eventos.map(mapEvento);
     const weekly = d.semanales[0] ? mapSemanal(d.semanales[0]) : null;
+    const perfil = d.perfil as PerfilDeportista;
     return {
       id: d.id,
       nombre: d.nombre,
       posicion: d.posicion,
       dorsal: d.dorsal,
       grupo: d.grupo?.nombre ?? null,
+      perfil,
       dailyLogs,
       events,
-      risk: computeRisk({ dailyLogs, events, weekly }),
-      trend: analyzeTrend(dailyLogs, events),
+      risk: computeRisk({ dailyLogs, events, weekly, perfil }),
+      trend: analyzeTrend(dailyLogs, events, undefined, perfil),
     };
   });
 }
@@ -115,14 +128,16 @@ export async function getDeportistaFull(id: string) {
   const dailyLogs = d.controles.map(mapControl);
   const events = d.eventos.map(mapEvento);
   const weekly = d.semanales[0] ? mapSemanal(d.semanales[0]) : null;
+  const perfil = d.perfil as PerfilDeportista;
 
   return {
     ...d,
     dailyLogs,
     events,
     weekly,
-    risk: computeRisk({ dailyLogs, events, weekly }),
-    trend: analyzeTrend(dailyLogs, events),
+    perfil,
+    risk: computeRisk({ dailyLogs, events, weekly, perfil }),
+    trend: analyzeTrend(dailyLogs, events, undefined, perfil),
   };
 }
 
@@ -131,4 +146,13 @@ export async function getMiDeportista(usuarioId: string) {
   const d = await prisma.deportista.findFirst({ where: { usuarioId } });
   if (!d) return null;
   return getDeportistaFull(d.id);
+}
+
+/** Solo el perfil del deportista del usuario logueado (para renderizar el formulario). */
+export async function getMiPerfil(usuarioId: string): Promise<PerfilDeportista | null> {
+  const d = await prisma.deportista.findFirst({
+    where: { usuarioId },
+    select: { perfil: true },
+  });
+  return (d?.perfil as PerfilDeportista) ?? null;
 }

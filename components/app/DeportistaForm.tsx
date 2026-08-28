@@ -3,13 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSubmit, Row, FormMsg } from "./forms-shared";
+import { PerfilSelect } from "./PerfilSelect";
 
 export function DeportistaForm({
   grupos,
   orgId,
+  perfilPorDefecto = "EQUIPO",
 }: {
   grupos: { id: string; nombre: string }[];
   orgId?: string;
+  perfilPorDefecto?: string;
 }) {
   const router = useRouter();
   const { loading, error, run } = useSubmit();
@@ -17,6 +20,7 @@ export function DeportistaForm({
   const [posicion, setPosicion] = useState("");
   const [dorsal, setDorsal] = useState("");
   const [grupoId, setGrupoId] = useState("");
+  const [perfil, setPerfil] = useState(perfilPorDefecto);
 
   return (
     <div className="card max-w-lg p-6">
@@ -40,6 +44,9 @@ export function DeportistaForm({
             </select>
           </Row>
         )}
+        <Row label="Perfil de deportista">
+          <PerfilSelect value={perfil} onChange={setPerfil} />
+        </Row>
         <FormMsg error={error} />
         <button
           disabled={loading}
@@ -54,6 +61,7 @@ export function DeportistaForm({
                   posicion: posicion || null,
                   dorsal: dorsal ? Number(dorsal) : null,
                   grupoId: grupoId || null,
+                  perfil,
                   organizacionId: orgId,
                 },
               },

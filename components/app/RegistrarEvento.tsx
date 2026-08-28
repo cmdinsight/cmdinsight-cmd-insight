@@ -2,11 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SPECIAL_EVENT_TYPES, type SpecialEventType } from "@/lib/score/types";
+import type { PerfilDeportista, SpecialEventType } from "@/lib/score/types";
+import { getPerfil } from "@/lib/score/perfiles";
 import { MultiChips } from "@/components/demo/fields";
 
-export function RegistrarEvento({ deportistaId }: { deportistaId: string }) {
+export function RegistrarEvento({
+  deportistaId,
+  perfil = "EQUIPO",
+}: {
+  deportistaId: string;
+  perfil?: PerfilDeportista;
+}) {
   const router = useRouter();
+  const eventos = getPerfil(perfil).eventos;
   const [fecha, setFecha] = useState(new Date().toISOString().slice(0, 10));
   const [tipos, setTipos] = useState<SpecialEventType[]>([]);
   const [comentario, setComentario] = useState("");
@@ -43,7 +51,7 @@ export function RegistrarEvento({ deportistaId }: { deportistaId: string }) {
         </div>
         <div>
           <label className="label">Tipo de evento</label>
-          <MultiChips options={SPECIAL_EVENT_TYPES} value={tipos} onChange={setTipos} />
+          <MultiChips options={eventos} value={tipos} onChange={setTipos} />
         </div>
         <div>
           <label className="label">Comentario</label>

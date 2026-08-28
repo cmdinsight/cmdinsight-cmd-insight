@@ -1,6 +1,8 @@
 // Tipos del motor de riesgo de lesión de CMD Insight.
-// Toda la lógica de cálculo vive en engine.ts y trend.ts.
+// Toda la lógica de cálculo vive en engine.ts, perfiles.ts y trend.ts.
 
+// Conjunto completo de zonas de dolor (la unión de todos los perfiles).
+// Cada perfil expone su propio subconjunto en perfiles.ts.
 export type PainZone =
   | "Ninguna"
   | "Isquiotibiales"
@@ -11,6 +13,15 @@ export type PainZone =
   | "Tobillo"
   | "Cadera"
   | "Espalda"
+  | "Lumbar"
+  | "Cervical"
+  | "Hombro"
+  | "Codo"
+  | "Muñeca / mano"
+  | "Tibia"
+  | "Tendón de Aquiles"
+  | "Fascia plantar"
+  | "Cintilla iliotibial"
   | "Otra";
 
 export const PAIN_ZONES: PainZone[] = [
@@ -23,14 +34,34 @@ export const PAIN_ZONES: PainZone[] = [
   "Tobillo",
   "Cadera",
   "Espalda",
+  "Lumbar",
+  "Cervical",
+  "Hombro",
+  "Codo",
+  "Muñeca / mano",
+  "Tibia",
+  "Tendón de Aquiles",
+  "Fascia plantar",
+  "Cintilla iliotibial",
   "Otra",
 ];
 
-// Formulario 1 — Control diario (después de cada entrenamiento o partido)
+export type PerfilDeportista =
+  | "EQUIPO"
+  | "CORREDOR"
+  | "CICLISTA"
+  | "TRIATLETA"
+  | "FUERZA"
+  | "FITNESS";
+
+/** Solo aplica al perfil FUERZA: distinguir dolor muscular (DOMS, tolerado) de articular. */
+export type TipoDolor = "muscular" | "articular";
+
+// Formulario 1 — Control diario (después de cada entrenamiento o sesión)
 export interface DailyLog {
   /** Fecha ISO yyyy-mm-dd */
   date: string;
-  /** Carga percibida del entrenamiento (RPE) 0–10 */
+  /** Carga percibida del entrenamiento / sesión (RPE) 0–10 */
   rpe: number;
   /** Duración en minutos */
   minutes: number;
@@ -44,6 +75,14 @@ export interface DailyLog {
   sueno: number;
   /** Estrés / cansancio mental 0–10 */
   estres: number;
+
+  // ---- Campos por perfil (opcionales) ----
+  /** CORREDOR / CICLISTA: distancia del día en km */
+  km?: number;
+  /** FUERZA: tipo de dolor reportado */
+  tipoDolor?: TipoDolor;
+  /** FUERZA: si la sesión incluyó trabajo al fallo muscular */
+  entrenoAlFallo?: boolean;
 }
 
 // Formulario 2 — Control semanal
@@ -62,12 +101,19 @@ export interface WeeklyLog {
   entrenoConDolor: boolean;
 }
 
+// Conjunto completo de tipos de evento (la unión de todos los perfiles).
 export type SpecialEventType =
   | "Golpe fuerte"
   | "Tirón muscular"
   | "Sobrecarga progresiva"
   | "Calambres repetidos"
   | "Molestia de lesión previa"
+  | "Dolor agudo al correr"
+  | "Pisada en falso"
+  | "Cambio de calzado"
+  | "Caída"
+  | "Pinchazo agudo levantando"
+  | "Molestia articular bajo carga"
   | "Otro";
 
 export const SPECIAL_EVENT_TYPES: SpecialEventType[] = [
@@ -76,6 +122,12 @@ export const SPECIAL_EVENT_TYPES: SpecialEventType[] = [
   "Sobrecarga progresiva",
   "Calambres repetidos",
   "Molestia de lesión previa",
+  "Dolor agudo al correr",
+  "Pisada en falso",
+  "Cambio de calzado",
+  "Caída",
+  "Pinchazo agudo levantando",
+  "Molestia articular bajo carga",
   "Otro",
 ];
 

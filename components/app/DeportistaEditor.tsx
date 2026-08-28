@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSubmit, Row, FormMsg } from "./forms-shared";
+import { PerfilSelect } from "./PerfilSelect";
 
 interface D {
   id: string;
@@ -10,6 +11,7 @@ interface D {
   posicion: string | null;
   dorsal: number | null;
   grupoId: string | null;
+  perfil: string;
   activo: boolean;
   organizacionId: string;
 }
@@ -27,6 +29,7 @@ export function DeportistaEditor({
   const [posicion, setPosicion] = useState(d.posicion ?? "");
   const [dorsal, setDorsal] = useState(d.dorsal?.toString() ?? "");
   const [grupoId, setGrupoId] = useState(d.grupoId ?? "");
+  const [perfil, setPerfil] = useState(d.perfil || "EQUIPO");
 
   const save = () =>
     run(
@@ -38,6 +41,7 @@ export function DeportistaEditor({
           posicion: posicion || null,
           dorsal: dorsal ? Number(dorsal) : null,
           grupoId: grupoId || null,
+          perfil,
           organizacionId: d.organizacionId,
         },
       },
@@ -77,6 +81,9 @@ export function DeportistaEditor({
             </select>
           </Row>
         )}
+        <Row label="Perfil de deportista">
+          <PerfilSelect value={perfil} onChange={setPerfil} />
+        </Row>
         <FormMsg error={error} ok={ok} />
         <div className="flex flex-wrap gap-3">
           <button disabled={loading} onClick={save} className="btn btn-primary disabled:opacity-60">

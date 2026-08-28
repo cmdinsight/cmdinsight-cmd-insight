@@ -13,9 +13,11 @@ import type {
   SpecialEvent,
   WeeklyLog,
   PainZone,
+  PerfilDeportista,
   RiskColor,
   RiskLevel,
 } from "./types";
+import { getPerfil } from "./perfiles";
 
 const MS_DAY = 86_400_000;
 
@@ -60,7 +62,12 @@ export interface AcwrResult {
   inOptimalZone: boolean;
 }
 
-export function computeAcwr(logs: DailyLog[], asOf: string): AcwrResult {
+export function computeAcwr(
+  logs: DailyLog[],
+  asOf: string,
+  perfil?: PerfilDeportista,
+): AcwrResult {
+  const cfg = getPerfil(perfil).acwr;
   const inWindow = (l: DailyLog, n: number) => {
     const d = daysAgo(l.date, asOf);
     return d >= 0 && d < n;
@@ -71,11 +78,12 @@ export function computeAcwr(logs: DailyLog[], asOf: string): AcwrResult {
 
   let points = 0;
   if (ratio !== null) {
-    if (ratio <= 1.2) points = 0;
-    else if (ratio <= 1.3) points = 1;
+    if (ratio <= cfg.p1) points = 0;
+    else if (ratio <= cfg.p2) points = 1;
     else points = 2;
   }
-  const inOptimalZone = ratio !== null && ratio >= 0.8 && ratio <= 1.3;
+  const inOptimalZone =
+    ratio !== null && ratio >= cfg.optimo[0] && ratio <= cfg.optimo[1];
   return { acute, chronic, ratio, points, inOptimalZone };
 }
 
@@ -113,15 +121,23 @@ export function computePain(
   logs: DailyLog[],
   asOf: string,
   weekly?: WeeklyLog | null,
+  perfil?: PerfilDeportista,
 ): PainResult {
+  const cfg = getPerfil(perfil).dolor;
   const window = logs.filter((l) => {
     const d = daysAgo(l.date, asOf);
     return d >= 0 && d < 10;
   });
 
+  // Para FUERZA, el dolor muscular (DOMS) no cuenta para la persistencia; solo el articular.
+  const cuentaParaPersistencia = (l: DailyLog) =>
+    l.dolor >= 5 &&
+    l.zona !== "Ninguna" &&
+    (!cfg.distingueTipo || l.tipoDolor !== "muscular");
+
   const byZone = new Map<PainZone, number>();
   for (const l of window) {
-    if (l.dolor >= 5 && l.zona !== "Ninguna") {
+    if (cuentaParaPersistencia(l)) {
       byZone.set(l.zona, (byZone.get(l.zona) ?? 0) + 1);
     }
   }
@@ -139,7 +155,7 @@ export function computePain(
   const daysWithPain = window.filter((l) => l.dolor >= 3).length;
 
   let points = 0;
-  if (persistentDays >= 5 || weekly?.dolorPersistente) points = 2;
+  if (persistentDays >= cfg.diasPersistente || weekly?.dolorPersistente) points = 2;
   else if (anyPain || weekly?.entrenoConDolor) points = 1;
 
   return {
@@ -244,6 +260,7 @@ export type Trend = "up" | "down" | "flat";
 
 export interface RiskResult {
   asOf: string;
+  perfil: PerfilDeportista;
   score: number;
   acwr: AcwrResult;
   ifs: IfsResult;
@@ -264,6 +281,8 @@ export interface RiskInput {
   weekly?: WeeklyLog | null;
   /** Fecha de corte; por defecto la fecha del último control diario. */
   asOf?: string;
+  /** Perfil de deportista; por defecto EQUIPO (modelo de deporte de equipo). */
+  perfil?: PerfilDeportista;
 }
 
 function latestOnOrBefore(logs: DailyLog[], asOf: string): DailyLog | null {
@@ -280,26 +299,29 @@ function computeScoreOnly(
   events: SpecialEvent[],
   weekly: WeeklyLog | null | undefined,
   asOf: string,
+  perfil?: PerfilDeportista,
 ): number {
-  const acwr = computeAcwr(dailyLogs, asOf);
+  const acwr = computeAcwr(dailyLogs, asOf, perfil);
   const latest = latestOnOrBefore(dailyLogs, asOf);
   const ifs = latest ? computeIfs(latest).points : 0;
-  const pain = computePain(dailyLogs, asOf, weekly);
+  const pain = computePain(dailyLogs, asOf, weekly, perfil);
   const event = computeEvent(events, asOf);
   return clamp(acwr.points + ifs + pain.points + event.points, 0, 7);
 }
 
 export function computeRisk(input: RiskInput): RiskResult {
   const events = input.events ?? [];
+  const perfilCfg = getPerfil(input.perfil);
+  const perfil = perfilCfg.key;
   const sorted = [...input.dailyLogs].sort((a, b) => a.date.localeCompare(b.date));
   const asOf =
     input.asOf ??
     (sorted.length ? sorted[sorted.length - 1].date : new Date().toISOString().slice(0, 10));
 
-  const acwr = computeAcwr(sorted, asOf);
+  const acwr = computeAcwr(sorted, asOf, perfil);
   const latestLog = latestOnOrBefore(sorted, asOf);
   const ifs = latestLog ? computeIfs(latestLog) : { value: 0, points: 0 };
-  const pain = computePain(sorted, asOf, input.weekly);
+  const pain = computePain(sorted, asOf, input.weekly, perfil);
   const event = computeEvent(events, asOf);
 
   const score = clamp(acwr.points + ifs.points + pain.points + event.points, 0, 7);
@@ -316,7 +338,7 @@ export function computeRisk(input: RiskInput): RiskResult {
           ? "Sin historial crónico suficiente todavía."
           : `Ratio ${acwr.ratio.toFixed(2)} · aguda ${Math.round(acwr.acute)} vs crónica ${Math.round(
               acwr.chronic,
-            )} (óptimo 0.8–1.3).`,
+            )} (óptimo ${perfilCfg.acwr.optimo[0]}–${perfilCfg.acwr.optimo[1]}).`,
     },
     {
       key: "ifs",
@@ -334,7 +356,8 @@ export function computeRisk(input: RiskInput): RiskResult {
       max: 2,
       detail:
         pain.points === 2
-          ? `Dolor ≥5 durante ${pain.persistentDays} días en ${pain.persistentZone}.`
+          ? `Dolor ≥5 durante ${pain.persistentDays} días en ${pain.persistentZone}` +
+            (perfilCfg.dolor.distingueTipo ? " (dolor articular, no muscular)." : ".")
           : pain.points === 1
             ? "Dolor ocasional reportado."
             : "Sin dolor relevante.",
@@ -358,8 +381,8 @@ export function computeRisk(input: RiskInput): RiskResult {
   const criteria: ClinicalCriterion[] = [
     {
       key: "acwr",
-      label: "ACWR elevado (> 1.3)",
-      met: acwr.ratio !== null && acwr.ratio > 1.3,
+      label: `ACWR elevado (> ${perfilCfg.acwr.p2})`,
+      met: acwr.ratio !== null && acwr.ratio > perfilCfg.acwr.p2,
     },
     { key: "pain", label: "Dolor persistente", met: pain.points === 2 },
     {
@@ -389,7 +412,7 @@ export function computeRisk(input: RiskInput): RiskResult {
       severity: "mod",
     });
   }
-  if (acwr.ratio !== null && acwr.ratio > 1.3) {
+  if (acwr.ratio !== null && acwr.ratio > perfilCfg.acwr.p2) {
     alerts.push({ key: "pico_carga", label: "Aumento brusco de carga", severity: "mod" });
   }
 
@@ -397,13 +420,14 @@ export function computeRisk(input: RiskInput): RiskResult {
   const asOfPrev = new Date(Date.parse(asOf + "T00:00:00Z") - 7 * MS_DAY)
     .toISOString()
     .slice(0, 10);
-  const prevScore = computeScoreOnly(sorted, events, input.weekly, asOfPrev);
+  const prevScore = computeScoreOnly(sorted, events, input.weekly, asOfPrev, perfil);
   const trend: Trend = score > prevScore ? "up" : score < prevScore ? "down" : "flat";
 
   const todayLog = sorted.find((l) => daysAgo(l.date, asOf) === 0) ?? null;
 
   return {
     asOf,
+    perfil,
     score,
     acwr,
     ifs,

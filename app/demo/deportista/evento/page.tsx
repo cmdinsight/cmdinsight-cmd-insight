@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { SPECIAL_EVENT_TYPES, type SpecialEventType } from "@/lib/score/types";
+import type { SpecialEventType } from "@/lib/score/types";
+import { getPerfil } from "@/lib/score/perfiles";
 import { computeRisk, type RiskResult } from "@/lib/score/engine";
 import { Field, MultiChips } from "@/components/demo/fields";
 import { addEvent, effectiveAthleteData, todayISO } from "@/components/demo/store";
 import { FormResult } from "@/components/demo/FormResult";
+
+const EVENTOS = getPerfil("EQUIPO").eventos;
 
 export default function EventoPage() {
   const [tipos, setTipos] = useState<SpecialEventType[]>([]);
@@ -35,7 +38,7 @@ export default function EventoPage() {
 
       <div className="card mt-6 p-5 sm:p-7">
         <Field label="¿Ocurrió alguno de estos eventos?" hint="Podés marcar más de uno">
-          <MultiChips options={SPECIAL_EVENT_TYPES} value={tipos} onChange={setTipos} />
+          <MultiChips options={EVENTOS} value={tipos} onChange={setTipos} />
         </Field>
         <Field label="Comentario breve (opcional)">
           <textarea

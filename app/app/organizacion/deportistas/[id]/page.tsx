@@ -43,6 +43,7 @@ export default async function EditarDeportistaPage({ params }: { params: { id: s
             posicion: d.posicion,
             dorsal: d.dorsal,
             grupoId: d.grupoId,
+            perfil: d.perfil,
             activo: d.activo,
             organizacionId: d.organizacionId,
           }}

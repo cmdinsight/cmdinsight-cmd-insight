@@ -12,6 +12,15 @@ export const ZONA_TO_LABEL: Record<string, PainZone> = {
   TOBILLO: "Tobillo",
   CADERA: "Cadera",
   ESPALDA: "Espalda",
+  LUMBAR: "Lumbar",
+  CERVICAL: "Cervical",
+  HOMBRO: "Hombro",
+  CODO: "Codo",
+  MUNECA: "Muñeca / mano",
+  TIBIA: "Tibia",
+  AQUILES: "Tendón de Aquiles",
+  FASCIA_PLANTAR: "Fascia plantar",
+  CINTILLA: "Cintilla iliotibial",
   OTRA: "Otra",
 };
 
@@ -25,6 +34,15 @@ export const LABEL_TO_ZONA: Record<PainZone, string> = {
   Tobillo: "TOBILLO",
   Cadera: "CADERA",
   Espalda: "ESPALDA",
+  Lumbar: "LUMBAR",
+  Cervical: "CERVICAL",
+  Hombro: "HOMBRO",
+  Codo: "CODO",
+  "Muñeca / mano": "MUNECA",
+  Tibia: "TIBIA",
+  "Tendón de Aquiles": "AQUILES",
+  "Fascia plantar": "FASCIA_PLANTAR",
+  "Cintilla iliotibial": "CINTILLA",
   Otra: "OTRA",
 };
 

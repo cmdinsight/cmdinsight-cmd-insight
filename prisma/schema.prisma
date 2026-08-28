@@ -41,7 +41,30 @@ enum ZonaDolor {
   TOBILLO
   CADERA
   ESPALDA
+  LUMBAR
+  CERVICAL
+  HOMBRO
+  CODO
+  MUNECA
+  TIBIA
+  AQUILES
+  FASCIA_PLANTAR
+  CINTILLA
   OTRA
+}
+
+enum PerfilDeportista {
+  EQUIPO
+  CORREDOR
+  CICLISTA
+  TRIATLETA
+  FUERZA
+  FITNESS
+}
+
+enum TipoDolor {
+  MUSCULAR
+  ARTICULAR
 }
 
 model Organizacion {
@@ -90,6 +113,7 @@ model Deportista {
   fechaNac       DateTime?
   posicion       String?
   dorsal         Int?
+  perfil         PerfilDeportista @default(EQUIPO)
   activo         Boolean          @default(true)
   organizacionId String
   organizacion   Organizacion     @relation(fields: [organizacionId], references: [id], onDelete: Cascade)
@@ -122,18 +146,22 @@ model FichaMedica {
 }
 
 model ControlDiario {
-  id           String     @id @default(cuid())
-  deportistaId String
-  deportista   Deportista @relation(fields: [deportistaId], references: [id], onDelete: Cascade)
-  fecha        DateTime   @db.Date
-  rpe          Int
-  minutos      Int
-  dolor        Int
-  zona         ZonaDolor  @default(NINGUNA)
-  fatiga       Int
-  sueno        Int
-  estres       Int
-  createdAt    DateTime   @default(now())
+  id            String     @id @default(cuid())
+  deportistaId  String
+  deportista    Deportista @relation(fields: [deportistaId], references: [id], onDelete: Cascade)
+  fecha         DateTime   @db.Date
+  rpe           Int
+  minutos       Int
+  dolor         Int
+  zona          ZonaDolor  @default(NINGUNA)
+  fatiga        Int
+  sueno         Int
+  estres        Int
+  // Campos por perfil (opcionales)
+  km            Float?     // CORREDOR / CICLISTA
+  tipoDolor     TipoDolor? // FUERZA
+  entrenoAlFallo Boolean?  // FUERZA
+  createdAt     DateTime   @default(now())
 
   @@unique([deportistaId, fecha])
   @@index([deportistaId])

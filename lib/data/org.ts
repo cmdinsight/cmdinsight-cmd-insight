@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/lib/api";
 import type { SessionPayload } from "@/lib/session";
 import type { Rol } from "@/lib/roles";
+import { PERFIL_KEYS } from "@/lib/score/perfiles";
+
+function perfilValido(p: unknown): string {
+  return typeof p === "string" && (PERFIL_KEYS as string[]).includes(p) ? p : "EQUIPO";
+}
 
 /** Devuelve el orgId sobre el que puede operar la sesión, o lanza 403. */
 export function resolveOrgId(session: SessionPayload, requested?: string | null): string {
@@ -27,6 +32,7 @@ export interface DeportistaInput {
   posicion?: string | null;
   dorsal?: number | null;
   grupoId?: string | null;
+  perfil?: string | null;
 }
 
 export async function crearDeportista(orgId: string, i: DeportistaInput) {
@@ -39,6 +45,7 @@ export async function crearDeportista(orgId: string, i: DeportistaInput) {
       posicion: i.posicion?.toString().trim() || null,
       dorsal: i.dorsal != null && !Number.isNaN(Number(i.dorsal)) ? Math.round(Number(i.dorsal)) : null,
       grupoId: i.grupoId || null,
+      perfil: perfilValido(i.perfil) as any,
     },
   });
 }
@@ -53,6 +60,7 @@ export async function actualizarDeportista(id: string, i: Partial<DeportistaInpu
         ? { dorsal: i.dorsal != null && !Number.isNaN(Number(i.dorsal)) ? Math.round(Number(i.dorsal)) : null }
         : {}),
       ...(i.grupoId !== undefined ? { grupoId: i.grupoId || null } : {}),
+      ...(i.perfil !== undefined ? { perfil: perfilValido(i.perfil) as any } : {}),
       ...(i.activo !== undefined ? { activo: !!i.activo } : {}),
     },
   });

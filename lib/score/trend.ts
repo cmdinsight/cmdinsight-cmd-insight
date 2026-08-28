@@ -3,8 +3,9 @@
 //   increasing_fatigue · rapid_load_increase · frequent_pain
 //   multiple_events · poor_sleep · acwr_out_of_range
 
-import type { DailyLog, SpecialEvent } from "./types";
+import type { DailyLog, PerfilDeportista, SpecialEvent } from "./types";
 import { computeAcwr, dailyLoad, daysAgo } from "./engine";
+import { getPerfil } from "./perfiles";
 
 export interface TrendFactor {
   key: string;
@@ -27,7 +28,9 @@ export function analyzeTrend(
   dailyLogs: DailyLog[],
   events: SpecialEvent[],
   asOf?: string,
+  perfil?: PerfilDeportista,
 ): TrendAnalysis {
+  const rangoSeguro = getPerfil(perfil).acwr.seguro;
   const sorted = [...dailyLogs].sort((a, b) => a.date.localeCompare(b.date));
   const cut =
     asOf ??
@@ -105,13 +108,13 @@ export function analyzeTrend(
     });
   }
 
-  // acwr_out_of_range — fuera de 0.8–1.5
-  const acwr = computeAcwr(sorted, cut);
-  if (acwr.ratio !== null && (acwr.ratio < 0.8 || acwr.ratio > 1.5)) {
+  // acwr_out_of_range — fuera del rango seguro del perfil
+  const acwr = computeAcwr(sorted, cut, perfil);
+  if (acwr.ratio !== null && (acwr.ratio < rangoSeguro[0] || acwr.ratio > rangoSeguro[1])) {
     factors.push({
       key: "acwr_out_of_range",
       label: "ACWR fuera de rango",
-      detail: `Ratio ${acwr.ratio.toFixed(2)} (rango seguro 0.8–1.5).`,
+      detail: `Ratio ${acwr.ratio.toFixed(2)} (rango seguro ${rangoSeguro[0]}–${rangoSeguro[1]}).`,
     });
   }
 

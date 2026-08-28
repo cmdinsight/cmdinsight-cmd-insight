@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { labelToZona } from "./zonas";
 import { getDeportistaFull } from "./deportistas";
-import type { PainZone } from "@/lib/score/types";
+import type { PainZone, TipoDolor } from "@/lib/score/types";
+import { SPECIAL_EVENT_TYPES } from "@/lib/score/types";
 import { ApiError } from "@/lib/api";
 
 function day(dateISO: string): Date {
@@ -25,10 +26,18 @@ export interface DailyInput {
   fatiga: number;
   sueno: number;
   estres: number;
+  // por perfil (opcionales)
+  km?: number | null;
+  tipoDolor?: TipoDolor | null;
+  entrenoAlFallo?: boolean | null;
 }
 
 export async function saveControlDiario(deportistaId: string, i: DailyInput) {
   const fecha = day(i.date);
+  const kmNum = i.km == null || i.km === ("" as unknown) ? null : Number(i.km);
+  if (kmNum != null && (Number.isNaN(kmNum) || kmNum < 0 || kmNum > 400)) {
+    throw new ApiError(400, "Distancia (km) fuera de rango.");
+  }
   const data = {
     rpe: int(i.rpe, 0, 10, "RPE"),
     minutos: int(i.minutes, 1, 400, "Duración"),
@@ -37,6 +46,13 @@ export async function saveControlDiario(deportistaId: string, i: DailyInput) {
     fatiga: int(i.fatiga, 0, 10, "Fatiga"),
     sueno: int(i.sueno, 1, 5, "Sueño"),
     estres: int(i.estres, 0, 10, "Estrés"),
+    km: kmNum,
+    tipoDolor: (i.tipoDolor === "muscular"
+      ? "MUSCULAR"
+      : i.tipoDolor === "articular"
+        ? "ARTICULAR"
+        : null) as any,
+    entrenoAlFallo: i.entrenoAlFallo == null ? null : !!i.entrenoAlFallo,
   };
   await prisma.controlDiario.upsert({
     where: { deportistaId_fecha: { deportistaId, fecha } },
@@ -81,14 +97,7 @@ export interface EventInput {
   registradoPor?: string | null;
 }
 
-const EVENT_TYPES = new Set([
-  "Golpe fuerte",
-  "Tirón muscular",
-  "Sobrecarga progresiva",
-  "Calambres repetidos",
-  "Molestia de lesión previa",
-  "Otro",
-]);
+const EVENT_TYPES = new Set<string>(SPECIAL_EVENT_TYPES);
 
 export async function saveEvento(deportistaId: string, i: EventInput) {
   const fecha = day(i.date);
