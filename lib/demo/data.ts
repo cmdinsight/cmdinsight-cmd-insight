@@ -212,6 +212,9 @@ interface PerfilDemo {
   /** [km por sesión fuera de la última semana, km por sesión en la última semana] */
   km?: [number, number];
   evento?: SpecialEvent;
+  /** Días de historial simulado (por defecto 35). FITNESS arranca corto para
+   *  mostrar el período de calibración del score. */
+  dias?: number;
 }
 
 const DEMO_PERFIL: Record<Exclude<PerfilDeportista, "EQUIPO">, PerfilDemo> = {
@@ -269,8 +272,9 @@ const DEMO_PERFIL: Record<Exclude<PerfilDeportista, "EQUIPO">, PerfilDemo> = {
     archetype: "estable",
     seed: 205,
     nombre: "Lucía Fernández",
-    contexto: "Entrena para estar en forma, 3–4 veces por semana.",
+    contexto: "Recién empieza a entrenar para estar en forma. Lleva pocos días de registro.",
     zona: "Lumbar",
+    dias: 6,
   },
 };
 
@@ -279,8 +283,9 @@ function buildPerfilLogs(perfil: Exclude<PerfilDeportista, "EQUIPO">): DailyLog[
   const perfilCfg = getPerfil(perfil);
   const rand = rng(cfg.seed);
   const logs: DailyLog[] = [];
+  const dias = cfg.dias ?? HISTORY_DAYS;
 
-  for (let d = HISTORY_DAYS - 1; d >= 0; d--) {
+  for (let d = dias - 1; d >= 0; d--) {
     const dow = new Date(Date.parse(DEMO_AS_OF + "T00:00:00Z") - d * 86_400_000).getUTCDay();
     const isRest = dow === 0 && rand() > 0.15;
     const recent = d < 7;
