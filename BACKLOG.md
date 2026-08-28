@@ -54,11 +54,16 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
 
 - [ ] **Alta self-serve**: registro directo desde la landing → crea una organización tipo
       INDIVIDUAL + usuario DEPORTISTA + su Deportista, todo en un paso. Hoy lo crea Admin CMD.
-- [ ] **Perfiles de deportista** (EQUIPO / CORREDOR / CICLISTA / TRIATLETA / FUERZA / FITNESS):
-      personalizan el formulario, el algoritmo (métrica de carga, umbral de ACWR, manejo del DOMS
-      vs dolor articular, zonas de dolor) y el dashboard. Propuesta completa + bibliografía en
-      **`docs/perfiles-de-deportista.md`**. Arrancar por CORREDOR y FUERZA. Validar el mapa de
-      parámetros con un fisio antes de tocar el motor.
+- [x] **Perfiles de deportista** (EQUIPO / CORREDOR / CICLISTA / TRIATLETA / FUERZA / FITNESS):
+      implementados. `lib/score/perfiles.ts` centraliza la config (umbrales ACWR, días de dolor
+      persistente, DOMS vs dolor articular, zonas y eventos, preguntas del formulario). El motor
+      (`engine`/`trend`/`recomendaciones`) está parametrizado por perfil; EQUIPO mantiene el
+      comportamiento anterior exacto. Selector de perfil en alta/edición de deportista (default
+      según tipo de org). `ControlDiarioForm` / `EventoForm` con campos condicionales (km,
+      tipo de dolor, trabajo al fallo). Propuesta + bibliografía en `docs/perfiles-de-deportista.md`.
+  - [ ] **Pendiente:** validar el mapa de parámetros por perfil con un fisio (los umbrales
+        actuales son una primera aproximación de la literatura).
+  - [ ] Backfill: los deportistas existentes quedan en EQUIPO por default; revisar caso por caso.
 - [x] "Plan Premium Individual" eliminado (web, prompt maestro, landing de referencia). Queda
       **un solo Plan Individual $160/mes** — CMD Insight no presta asistencia médica al individuo,
       es autocontrol. **Pendiente:** actualizar `CMD_Insight_Presentacion.pdf` (no se puede editar
