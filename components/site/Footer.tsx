@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { CONTACTO, lineaLegal } from "@/lib/legal";
+import { CONTACTO } from "@/lib/legal";
 
 export default function Footer() {
   return (
@@ -64,7 +64,6 @@ export default function Footer() {
               &ldquo;Profesionalizar la asistencia médica en el deporte no es una opción. Es una responsabilidad.&rdquo;
             </span>
           </div>
-          <span>{lineaLegal()}</span>
         </div>
       </div>
     </footer>

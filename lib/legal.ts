@@ -24,7 +24,3 @@ export const CONTACTO = {
   telefonoDlocal: "+598 98 052210",
   horario: "Respondemos de lunes a viernes.",
 };
-
-export function lineaLegal(): string {
-  return `Operado por ${LEGAL.razonSocial} · RUT ${LEGAL.rut} · ${LEGAL.pais}`;
-}
