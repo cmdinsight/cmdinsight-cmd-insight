@@ -31,12 +31,17 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
   - Requisitos de validación de merchant — HECHO en la web: `/terminos`, `/privacidad`, `/contacto`
     (formulario probado y funcionando + bandeja en `/app/cmd/mensajes`), línea legal en el footer,
     datos legales centralizados en `lib/legal.ts`. Sin redes sociales (dLocal lo prefiere a íconos rotos).
-  - **Falta (bloqueado por el dominio):**
-    1. Conseguir el subdominio definitivo — va a ser un subdominio de **`cmdtech.uy`** (todavía no lo tienen).
-    2. Conectar ese subdominio a Vercel.
-    3. En dLocal Go → Datos de la empresa → cambiar el sitio de `cmdinsight.lovable.app` a esa URL.
-    4. (Opcional) actualizar el teléfono en dLocal Go a +598 96 276 998.
-    5. Recién ahí avisarle a Bruna (dLocal) para que revise / valide.
+  - **Dominio — HECHO (2026-09-17):** `insight.cmdtech.uy` conectado al proyecto `cmd-insight` en
+    Vercel (nameservers de `cmdtech.uy` ya apuntan a Vercel DNS, se configuró solo, "Valid
+    Configuration"). Verificado: sirve la app, redirige `/app` a `/acceder`, sin nada hardcodeado
+    al host. `cmd-insight.vercel.app` se mantiene activo en paralelo.
+  - **Falta:**
+    1. En dLocal Go → Datos de la empresa → cambiar el sitio de `cmdinsight.lovable.app` a
+       `https://insight.cmdtech.uy` (paso de Manuel, en su cuenta de dLocal).
+    2. Actualizar `lib/legal.ts` (`sitioRegistrado`) para que coincida — hacerlo recién cuando el
+       paso 1 esté hecho en dLocal, así el campo documenta lo que está realmente registrado ahí.
+    3. (Opcional) actualizar el teléfono en dLocal Go a +598 96 276 998.
+    4. Recién ahí avisarle a Bruna (dLocal) para que revise / valide.
 - [ ] Facturación / comprobantes por organización.
 - [ ] Flujo de asignación del Plan Cortesía CMD y su vencimiento.
 - [ ] Panel de cobros para Admin CMD (quién pagó, quién debe, próximos vencimientos).
