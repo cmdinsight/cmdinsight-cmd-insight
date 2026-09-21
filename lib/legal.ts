@@ -10,9 +10,9 @@ export const LEGAL = {
   pais: "Uruguay",
   // Quién desarrolla el producto (atribución, no es el operador legal).
   desarrolladaPor: "CMD Tech — unidad tecnológica de Integra Medical Group",
-  // URL registrada en dLocal Go. Hay que actualizarla a la definitiva (subdominio de
-  // cmdtech.uy) antes de pedir la validación.
-  sitioRegistrado: "https://cmdinsight.lovable.app/",
+  // URL registrada en dLocal Go (Configuración → Datos de la empresa). Actualizada por el
+  // equipo de dLocal Go (Ezequiel) el 2026-09-21, ticket #135042683 "Validación KYC 2".
+  sitioRegistrado: "https://insight.cmdtech.uy/",
 };
 
 export const CONTACTO = {

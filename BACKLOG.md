@@ -35,13 +35,14 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
     Vercel (nameservers de `cmdtech.uy` ya apuntan a Vercel DNS, se configuró solo, "Valid
     Configuration"). Verificado: sirve la app, redirige `/app` a `/acceder`, sin nada hardcodeado
     al host. `cmd-insight.vercel.app` se mantiene activo en paralelo.
-  - **Falta:**
-    1. En dLocal Go → Datos de la empresa → cambiar el sitio de `cmdinsight.lovable.app` a
-       `https://insight.cmdtech.uy` (paso de Manuel, en su cuenta de dLocal).
-    2. Actualizar `lib/legal.ts` (`sitioRegistrado`) para que coincida — hacerlo recién cuando el
-       paso 1 esté hecho en dLocal, así el campo documenta lo que está realmente registrado ahí.
-    3. (Opcional) actualizar el teléfono en dLocal Go a +598 96 276 998.
-    4. Recién ahí avisarle a Bruna (dLocal) para que revise / valide.
+  - **Sitio registrado — HECHO (2026-09-21):** el equipo de dLocal Go (Ezequiel, soporte) cambió
+    el sitio de `cmdinsight.lovable.app` a `https://insight.cmdtech.uy` a pedido nuestro (hilo
+    "COMO CAMBIO EL SITIO WEB ?"). Confirmado por Ezequiel: *"el cambio de sitio web ya quedó
+    efectuado."* `lib/legal.ts` (`sitioRegistrado`) actualizado para que coincida.
+  - **En curso:** ticket **#135042683 "Validación KYC 2"** — dLocal Go está revisando la
+    documentación con su equipo de Compliance. A la espera de que avisen el resultado (no depende
+    de código; puede requerir más info de Manuel si Compliance pide algo).
+  - (Opcional, sin hacer todavía) actualizar el teléfono en dLocal Go a +598 96 276 998.
 - [ ] Facturación / comprobantes por organización.
 - [ ] Flujo de asignación del Plan Cortesía CMD y su vencimiento.
 - [ ] Panel de cobros para Admin CMD (quién pagó, quién debe, próximos vencimientos).
