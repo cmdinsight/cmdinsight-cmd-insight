@@ -39,9 +39,11 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
     el sitio de `cmdinsight.lovable.app` a `https://insight.cmdtech.uy` a pedido nuestro (hilo
     "COMO CAMBIO EL SITIO WEB ?"). Confirmado por Ezequiel: *"el cambio de sitio web ya quedó
     efectuado."* `lib/legal.ts` (`sitioRegistrado`) actualizado para que coincida.
-  - **En curso:** ticket **#135042683 "Validación KYC 2"** — dLocal Go está revisando la
-    documentación con su equipo de Compliance. A la espera de que avisen el resultado (no depende
-    de código; puede requerir más info de Manuel si Compliance pide algo).
+  - **MERCHANT VALIDADO — HECHO (2026-09-23):** dLocal Go aprobó la cuenta (ticket #135042683
+    "Validación KYC 2"). Mensaje de Ezequiel: *"¡Ya está todo listo para que empieces a vender!
+    Ya tienes activados todos los métodos de pago de Latinoamérica."* Ya no hay ningún bloqueo de
+    compliance ni de sitio — queda libre para empezar la integración técnica de cobros (checkout,
+    webhooks) cuando se decida priorizarla.
   - (Opcional, sin hacer todavía) actualizar el teléfono en dLocal Go a +598 96 276 998.
 - [ ] Facturación / comprobantes por organización.
 - [ ] Flujo de asignación del Plan Cortesía CMD y su vencimiento.
