@@ -80,6 +80,7 @@ model Organizacion {
   usuarios    Usuario[]
   deportistas Deportista[]
   grupos      Grupo[]
+  suscripcion Suscripcion?
 }
 
 model Usuario {
@@ -208,4 +209,55 @@ model ContactoMensaje {
   createdAt DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ── Cobros con dLocal Go (plan individual) ─────────────────────────────────
+// Configuración única del cobro: qué plan de suscripción de dLocal Go se usa.
+// Se guarda en la base (no en variables de entorno) para que el admin CMD lo
+// cree o lo pegue desde el panel sin redeploy.
+model ConfigCobro {
+  id              String    @id @default("default")
+  dlocalPlanId    String?
+  dlocalPlanToken String?
+  ultimaSync      DateTime?
+  ultimoError     String?
+  updatedAt       DateTime  @updatedAt
+}
+
+// Suscripción de dLocal Go vinculada a la organización INDIVIDUAL del
+// deportista (se vincula por el email con el que pagó).
+model Suscripcion {
+  id                   String       @id @default(cuid())
+  organizacionId       String       @unique
+  organizacion         Organizacion @relation(fields: [organizacionId], references: [id], onDelete: Cascade)
+  dlocalSubscriptionId String       @unique
+  email                String
+  // Estado nuestro: ACTIVA | PENDIENTE | VENCIDA | CANCELADA
+  estado               String
+  // Estado tal cual lo devuelve dLocal (para diagnosticar).
+  estadoDlocal         String?
+  activaEnDlocal       Boolean      @default(true)
+  ultimoPagoEn         DateTime?
+  // Hasta cuándo tiene acceso (último pago + 1 mes + días de gracia).
+  pagaHasta            DateTime?
+  pagos                Pago[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+}
+
+// Cada cobro mensual (una "ejecución" de la suscripción en dLocal Go).
+model Pago {
+  id            String      @id @default(cuid())
+  suscripcionId String
+  suscripcion   Suscripcion @relation(fields: [suscripcionId], references: [id], onDelete: Cascade)
+  dlocalId      String      @unique
+  monto         Float?
+  moneda        String?
+  estadoDlocal  String
+  pagado        Boolean
+  fecha         DateTime
+  createdAt     DateTime    @default(now())
+
+  @@index([suscripcionId])
+  @@index([fecha])
 }

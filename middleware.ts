@@ -10,6 +10,8 @@ function isProtected(pathname: string): boolean {
     if (pathname.startsWith("/api/setup")) return false;
     if (pathname.startsWith("/api/registro")) return false;
     if (pathname.startsWith("/api/contacto")) return false;
+    // Aviso de dLocal Go: solo dispara una consulta a dLocal, no confía en el cuerpo.
+    if (pathname.startsWith("/api/dlocal/")) return false;
     return true;
   }
   return false;

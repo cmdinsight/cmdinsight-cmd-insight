@@ -14,6 +14,7 @@ function navFor(rol: Rol, athleteIndividual: boolean): NavItem[] {
         ? [
             { href: "/app/mi", label: "Mi control" },
             { href: "/app/mi/evolucion", label: "Mi evolución" },
+            { href: "/app/mi/suscripcion", label: "Mi suscripción" },
           ]
         : [{ href: "/app/mi", label: "Mi control" }];
     case "ENTRENADOR":
@@ -29,6 +30,7 @@ function navFor(rol: Rol, athleteIndividual: boolean): NavItem[] {
     case "ADMIN_CMD":
       return [
         { href: "/app/cmd", label: "Organizaciones" },
+        { href: "/app/cmd/cobros", label: "Cobros" },
         { href: "/app/cmd/mensajes", label: "Mensajes" },
         { href: "/app/plantel", label: "Plantel" },
       ];

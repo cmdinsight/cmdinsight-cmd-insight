@@ -11,8 +11,25 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
 
 - [ ] Modelo de datos de precios y modalidad (mensual / trimestral / semestral / anual con
       descuento por compromiso, si se decide). Hoy `lib/planes.ts` tiene solo el precio mensual.
-- [ ] Estados de suscripción: trial activo → vencido → pago → moroso → baja.
-- [ ] Integración de pagos con **dLocal** — pagos por la web, sobre todo el plan individual.
+- [x] **Cobro del Plan Individual con dLocal Go — código hecho (23/11/2026), falta activarlo:**
+  - `lib/dlocal.ts` (cliente de la API, sandbox o producción con `DLOCAL_ENV`), `lib/cobros.ts`
+    (reglas puras: un mes + 5 días de gracia, estados ACTIVA / PENDIENTE / VENCIDA / CANCELADA),
+    `lib/data/cobros.ts` (sincronización). Tablas nuevas `ConfigCobro`, `Suscripcion`, `Pago`.
+  - El aviso de dLocal (`/api/dlocal/notificacion`) **no se cree**: solo dispara una consulta a la
+    API de dLocal con nuestras claves. También corre una vez por día (cron de `vercel.json`) y al
+    volver del checkout. La suscripción se vincula por el email (va pre-cargado en el checkout).
+  - Deportista: botón "Pagar $160 por mes" al vencer la prueba, `/app/mi/suscripcion` (estado,
+    cobros, dar de baja) y pantalla "No pudimos cobrar tu mes" si el cobro mensual no entra.
+    Un Plan Individual asignado a mano (sin suscripción) no se frena.
+  - Admin CMD: `/app/cmd/cobros` (estado de la conexión, crear o vincular el plan, sincronizar,
+    suscripciones y últimos cobros).
+  - [ ] **Para activarlo:** cargar `DLOCAL_API_KEY` y `DLOCAL_SECRET_KEY` en Vercel (primero las
+        del sandbox), redeploy, "Crear plan $160/mes" en Cobros, probar un pago de prueba, y
+        después cambiar a las claves reales + `DLOCAL_ENV=production` y crear el plan real.
+  - [ ] Confirmar con un pago de prueba los nombres de estado que usa dLocal Go (se aceptan
+        PAID / APPROVED / COMPLETED / SUCCESS / CONFIRMED) y que el email llega pre-cargado.
+- [x] Estados de suscripción: prueba → activa → pago rechazado → dada de baja (ver arriba).
+- [ ] Integración de pagos con **dLocal** — referencia original del pedido — pagos por la web, sobre todo el plan individual.
       Checkout, webhooks de confirmación, reintentos. dLocal Go **sí** tiene API de suscripciones /
       pagos recurrentes (`create_subscription_plan`, `create_recurring_payment`, webhooks de
       ejecución, cancelación). Cliente de referencia: github.com/MetaLabs-inc/dlocal_go.
@@ -47,7 +64,8 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
   - (Opcional, sin hacer todavía) actualizar el teléfono en dLocal Go a +598 96 276 998.
 - [ ] Facturación / comprobantes por organización.
 - [ ] Flujo de asignación del Plan Cortesía CMD y su vencimiento.
-- [ ] Panel de cobros para Admin CMD (quién pagó, quién debe, próximos vencimientos).
+- [x] Panel de cobros para Admin CMD del plan individual (`/app/cmd/cobros`). Clubes y gimnasios
+      siguen fuera (link de pago, más adelante).
 
 ## 2. Gimnasios — flujo completo
 
@@ -67,8 +85,8 @@ El Plan Club va incluido sin costo para clubes con cobertura médica CMD *durant
       cuando faltan ≤ 5 días o ya venció (todos los roles con org). El deportista individual con
       prueba vencida ve la pantalla `TrialVencido` (recuperable: el admin extiende `trialHasta` o
       asigna un plan). Clubes/gimnasios solo ven el aviso, no se bloquean.
-  - [ ] **Pendiente:** cuando exista cobro con dLocal, la pantalla de vencido debe llevar al pago
-        en vez de "escribinos".
+  - [x] La pantalla de vencido lleva al pago de dLocal cuando el cobro está configurado
+        (si no, sigue mostrando "escribinos").
 - [x] **Verificación de email** (alta self-serve): `Usuario.emailVerificadoEn` / `verifToken`.
       Al registrarse se manda el mail (`lib/email.ts`, API REST de Resend por `fetch`, sin
       dependencia). `/verificar-email?token=` confirma; aviso + botón "reenviar" en el `AppShell`.
